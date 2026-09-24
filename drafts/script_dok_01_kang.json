@@ -1,0 +1,197 @@
+{
+  "series": "이름을 부르다",
+  "episode": 1,
+  "display_title": "누가 총독에게 폭탄을 던졌나",
+  "subject": "강우규 (姜宇奎, 1855.7.14~1920.11.29)",
+  "award": "건국훈장 대한민국장 (1962.3 추서)",
+  "sources": [
+    "한국민족문화대백과사전 「강우규」 https://encykorea.aks.ac.kr/Article/E0001298",
+    "국가보훈부 공훈전자사료관 이달의 독립운동가 강우규 https://e-gonghun.mpva.go.kr/user/IndepCrusaderDetail.do?goTocode=20003&mngNo=95",
+    "국가보훈부 나라사랑배움터 https://edu.mpva.go.kr/contpopup/contDetail.do?contNo=70",
+    "우리문화신문 순국일 기사 https://www.koya-culture.com/news/article.html?no=101804"
+  ],
+  "segments": [
+    {
+      "id": "01_hook",
+      "speaker": "M",
+      "text": "1919년 9월 2일 오후 다섯 시. 경성 남대문역에 폭탄이 터졌다. 표적은 그날 조선에 막 도착한 신임 총독이었다.",
+      "year": 1919,
+      "image": "output/images/kang_01_station.png",
+      "fx": "smoke",
+      "impact": {
+        "sound": "explosion",
+        "at_sentence": 2,
+        "db": -6,
+        "shake": 18
+      }
+    },
+    {
+      "id": "02_brand",
+      "speaker": "M",
+      "text": "이름을 부르다. 오늘 부를 이름.",
+      "year": 1919,
+      "image": "output/images/kang_03_ledger.png",
+      "locked_audio": "output/audio/locked_takes/common_B_brand.wav",
+      "fx": "dust"
+    },
+    {
+      "id": "03_setup",
+      "speaker": "M",
+      "text": "총독은 살아남았다. 대신 그를 맞으러 나온 서른일곱 명이 다쳤고, 그중 둘은 며칠 뒤 숨졌다.",
+      "year": 1919,
+      "image": "output/images/kang_02_aftermath.png",
+      "fx": "smoke_soft"
+    },
+    {
+      "id": "04_hint1",
+      "speaker": "M",
+      "text": "현장은 아수라장이었다. 그런데 폭탄을 던진 사람은 그 자리에서 붙잡히지 않았다.",
+      "year": 1919,
+      "image": "output/images/kang_04_street.png",
+      "fx": "dust"
+    },
+    {
+      "id": "05_hint2",
+      "speaker": "M",
+      "text": "일본 경찰이 그를 찾아낸 것은, 보름이 지나서였다.",
+      "year": 1919,
+      "image": "output/images/kang_05_patrol.png",
+      "fx": "flicker"
+    },
+    {
+      "id": "06_reveal",
+      "speaker": "M",
+      "text": "붙잡힌 사람은 예순네 살이었다. 한약방에서 약을 짓고, 만주에 학교를 세워 아이들을 가르치던 사람. 그의 이름은, 강우규.",
+      "year": 1855,
+      "image": "output/images/kang_06_herbshop.png",
+      "fx": "flicker_soft"
+    },
+    {
+      "id": "07_echo",
+      "speaker": "M",
+      "text": "그가 폭탄을 던진 남대문역은, 지금의 서울역이다.",
+      "year": 1919,
+      "image": "output/images/kang_07_rails.png"
+    },
+    {
+      "id": "08_quote",
+      "speaker": "M",
+      "text": "사형을 앞두고 그는 아들에게 이렇게 말했다. 내가 자나 깨나 잊을 수 없는 것은 우리 청년들의 교육이다.",
+      "year": 1920,
+      "image": "output/images/kang_08_prison.png",
+      "fx": "flicker"
+    },
+    {
+      "id": "08b_quote",
+      "speaker": "M",
+      "text": "내가 죽어서 청년들의 가슴에 조그마한 충격이라도 줄 수 있다면, 그것은 무엇보다 중요한 일이다.",
+      "year": 1920,
+      "image": "output/images/kang_09_blank.png"
+    },
+    {
+      "id": "09_cta",
+      "speaker": "M",
+      "text": "오늘 우리가 부른 이름. 강우규. 기억하겠습니다.",
+      "year": 1920,
+      "image": "assets/photos/kang_woogyu_portrait.jpg",
+      "nameplate": true,
+      "locked_audio": "output/audio/endings/ep01_kang_ending_take1.wav",
+      "reveal_points": [
+        [
+          0.1002,
+          0
+        ],
+        [
+          0.3508,
+          13
+        ],
+        [
+          0.4911,
+          13
+        ],
+        [
+          0.6693,
+          18
+        ],
+        [
+          0.8196,
+          18
+        ],
+        [
+          0.9815,
+          26
+        ]
+      ],
+      "motion": false
+    }
+  ],
+  "production_notes": {
+    "narration": "1인 내레이션(M=Piljae), ~했다 평서체. 음슴체 사용 금지.",
+    "speed": "1.15x (잡학쿠키 1.3x보다 느리게)",
+    "silence": "06_reveal 직전 0.5초 무음 삽입",
+    "bgm": "잔잔한 피아노/현악, 06_reveal 시점에 스팅",
+    "image_rule": "인물 얼굴 AI 생성 금지. 실제 사진은 공공누리 출처만.",
+    "cta": "댓글 유도는 나레이션에서 빼고 고정 댓글로 처리한다 (톤 유지)."
+  },
+  "voice": {
+    "speaker_M": "Piljae",
+    "model": "ssfm-v30",
+    "emotion_preset": "tonedown",
+    "speed": 0.95
+  },
+  "verified": {
+    "_검증일": "2026-09-09 전면 재검증 (문장 단위 대조)",
+    "의거": "1919-09-02 오후 5시, 경성 남대문역. 신임 총독 사이토 마코토 부임 — 백과사전",
+    "무기": "러시아인에게 구입한 영국제 수류탄. 백과사전이 같은 대상을 '폭탄'으로도 표기하므로 대본은 '폭탄'으로 통일",
+    "피해": "37명 부상, 그중 2명 며칠 뒤 사망 — 백과사전 원문 '37명이 다쳤다. 그중 2명은 며칠 뒤 사망하였다'. 사이토는 혁대에 파편 몇 조각뿐",
+    "체포": "1919-09-17, 경기도 경찰부 고등과 경부 김태석. 김태석은 투척 장면을 목격하고 추적했다 — '노인이라 의심받지 않았다'는 서술은 어느 사료에도 없음",
+    "나이": "1855-07-14생 → 의거일 만 64세. 65세는 순국 시점 나이. 공훈록·일부 언론의 65~66세는 세는나이 표기",
+    "직업": "한약방 운영, 1917년 지린성 라오허현 광동학교 설립·교장 — 백과사전. '평생 약만 지었다'는 과장이라 삭제",
+    "재판": "1920년 2월 경성지방법원 사형 선고, 공소·상고 기각",
+    "순국": "1920-11-29 서대문형무소 사형 집행",
+    "유언": "'내가 자나깨나 잊을 수 없는 것은 우리 청년들의 교육이다. 내가 죽어서 청년들의 가슴에 조그마한 충격이라도 줄 수 있다면 그것은 무엇보다 중요한 일이다' — 아들에게 남긴 유언. 이전 대본의 '내가 소원하는 일이다'는 오인용이었음",
+    "서훈": "건국훈장 대한민국장 (1962)",
+    "삭제된_창작": [
+      "'일본 경찰은 즉시 경성 전체를 봉쇄했다' — 근거 없음",
+      "'보름 동안 그는 경성 거리를 그대로 걸어 다녔다' — 근거 없음",
+      "'아무도 그를 의심하지 않았다. 의심할 이유가 없었기 때문이다' — 근거 없는 인과 창작"
+    ],
+    "초상": "위키미디어 커먼즈 'Kang Woo-kyu.JPG' — 퍼블릭 도메인, 1920년 이전. 현재 쓰는 파일이 커먼즈 원본과 바이트까지 일치함을 확인했다(42,174 bytes / 334×530)",
+    "브랜드_음성": "「이름을 부르다. 오늘 부를 이름.」은 매 회차 반복되는 시그니처라 **확정 테이크(common_B_brand.wav)를 고정**한다. 회차마다 새로 합성했더니 TTS 비결정성으로 톤이 갈렸다 — 영교차율 실측 13,723~17,560으로 28% 편차, 5화가 눈에 띄게 가벼웠다. 2화 테이크가 가장 묵직해 그것으로 확정. 파일은 이미 1.15배속·레벨 정규화가 적용된 상태다(locked_audio는 배속을 다시 걸지 않는다)"
+  },
+  "audio_dir": "output/audio/dok_01",
+  "output": "output/최종본/dok_01_kang.mp4",
+  "nameplate": [
+    "강우규",
+    "1855 – 1920"
+  ],
+  "portrait": "assets/photos/kang_woogyu_portrait.jpg",
+  "credit": [
+    "자료 · 국가보훈부 공훈전자사료관, 한국민족문화대백과사전",
+    "사진 · 위키미디어 커먼즈 (퍼블릭 도메인)"
+  ],
+  "silence_before": "06_reveal",
+  "pause_after": {
+    "02_brand": 1.4,
+    "06_reveal": 1.2
+  },
+  "name_at": 0.75,
+  "upload": {
+    "tags": [
+      "독립운동가",
+      "한국사",
+      "근현대사",
+      "역사",
+      "항일운동",
+      "순국선열",
+      "강우규",
+      "남대문역 폭탄 의거",
+      "사이토 마코토",
+      "shorts"
+    ],
+    "playlists": [
+      "전부 부른 이름"
+    ],
+    "hashtags_extra": []
+  }
+}

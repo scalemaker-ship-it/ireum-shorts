@@ -1,0 +1,241 @@
+"""회차 배경 이미지 일괄 생성 — Codex CLI의 내장 image_gen을 쓴다.
+
+OpenAI Images API를 직접 쓰면 과금되지만, `codex exec`는 ChatGPT 구독 쿼터로
+같은 모델을 쓴다. 대신 **쿼터가 실재한다** — 한 번에 8장쯤에서 막힌 적이 있다.
+그래서 이 스크립트는 (1) 이미 있는 파일은 건너뛰고 (2) 실패하면 거기서 멈춘다.
+다음 날 다시 돌리면 이어서 채운다.
+
+사용: python3 scripts/gen_images.py [회차접두어 ...]      예) gen_images.py kim nam
+"""
+import os
+import subprocess
+import sys
+
+BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+OUT = os.path.join(BASE, "output/images")
+
+# 전 회차 공통 — PRD 5항. 사람 얼굴이 식별되면 실존 인물 오인 소지가 생긴다.
+STYLE = ("Documentary still-photograph look, aged monochrome/sepia archival photo, "
+         "soft film grain, muted contrast, landscape orientation 4:3. "
+         "No identifiable faces (people only as distant figures, silhouettes, or from behind). "
+         "No text, no captions, no watermarks, no modern objects.")
+
+SCENES = {
+ # 6화 김익상 — 1921 조선총독부 투탄
+ "kim_01_hall":   "A 1920s colonial government office corridor in Korea right after a bomb blast: shattered window glass on the floor, drifting smoke, an overturned wooden chair, scattered papers. No people.",
+ "kim_02_toolbag":    "A worn 1920s electrician's canvas tool bag on a stone floor, with pliers and a roll of cloth insulating tape spilling out. Close view. No people.",
+ "kim_03_wires":  "An old electrical distribution board on a plaster wall with bundles of cloth-wrapped wires hanging loose, 1920s. No people.",
+ "kim_04_stairs": "An empty stone stair landing inside a 1920s government building, tall window, dust in the light shaft. No people.",
+ "kim_05_street": "A distant wide view of a 1920s Korean colonial city street, low tiled roofs and a few utility poles, seen from far away. Figures only as tiny distant silhouettes.",
+ "kim_06_pier":  "A 1920s Shanghai wharf in mist: a moored steamship hull, thick mooring ropes on bollards, wet stone quay. No people.",
+ "kim_07_dock":   "An empty wooden defendant's dock in a 1920s courtroom, plain rail and bench, shuttered window behind. No people.",
+ "kim_08_gate":   "A heavy iron prison gate seen from outside, brick wall, 1930s. No people.",
+ "kim_09_river":  "A wide river at dawn under heavy fog, faint far bank, still water. No people.",
+
+ # 7화 남자현 — 1933 하얼빈
+ "nam_01_street": "A 1930s Harbin street in winter seen from far away: snow on the ground, a tram and low European-style buildings, figures only as tiny distant silhouettes.",
+ "nam_02_bundle": "An old cloth bojagi bundle and a coarse hemp sack resting on a wooden floor. Close view. No people.",
+ "nam_03_flag":  "Flags on poles in front of a 1930s government building, seen from a distance, overcast sky. No people.",
+ "nam_04_alley":  "A narrow snow-covered alley between brick walls in 1930s Manchuria, footprints in the snow. No people.",
+ "nam_05_blood":  "A piece of white cloth on a wooden table with a dark stain spreading on it, and an old worn writing brush beside it. Close view. No people.",
+ "nam_06_hanbok": "A woman's plain white Korean hanbok jeogori hanging on a wall hook in a bare room. No people.",
+ "nam_07_school": "A small wooden schoolhouse alone on the wide Manchurian plain, low fence, bare trees. No people.",
+ "nam_08_cell": "A narrow barred window high on a cell wall, faint light falling on a stone floor. No people.",
+ "nam_09_grave":  "Snow-covered gravestones in a foreign cemetery, bare branches, winter light. No people.",
+
+ # 8화 강기동 — 의병
+ "kang8_01_post":  "A small Japanese military police outpost building in rural Korea, around 1909: low wooden structure, plank fence, dirt yard. No people.",
+ "kang8_02_cap":   "An old military-style peaked cap hanging on a nail on a plank wall, dim interior. Close view. No people.",
+ "kang8_03_cell":  "Dark wooden bars of a village jail cell, faint light through them, earthen floor. No people.",
+ "kang8_04_lamp":  "An oil lamp burning on a night-duty desk with a ledger and inkstone, dark room, 1900s. No people.",
+ "kang8_05_rack":  "An empty wooden rifle rack against a plank wall of an armory, dust on the shelf. No people.",
+ "kang8_06_uniform": "A dark high-collared uniform tunic hanging alone on a wall, empty, dim room. No people.",
+ "kang8_07_mountain": "A winter mountain trail and bare ridgelines in Korea, snow patches, low cloud. No people.",
+ "kang8_08_port":  "Wonsan harbor around 1910: wooden fishing boats moored at a stone pier, distant hills. No people.",
+ "kang8_09_field":  "An empty military parade ground of bare packed earth, a low wall and a single bare tree at the edge, overcast. No people.",
+
+ # 9화 스코필드 — 1919 제암리
+ "sch_01_ruins":   "The burnt ruins of a small rural Korean church in 1919: charred timber posts, collapsed roof beams, ash on the ground, thin smoke still rising. No people.",
+ "sch_02_bicycle": "An old bicycle from the 1910s leaning alone on a dirt country road, bare trees behind. No people.",
+ "sch_03_camera":  "A 1910s folding bellows camera on a wooden table with glass photographic plates beside it. Close view. No people.",
+ "sch_04_crowd":   "A very distant wide view of a large crowd filling a Korean city street in 1919, seen from far above; people only as an indistinct mass, no faces.",
+ "sch_05_newspaper":   "An English-language newspaper page on a desk next to an old typewriter, 1919. Text unreadable and blurred. No people.",
+ "sch_06_lab":     "An old laboratory bench with a brass microscope, glass petri dishes and specimen jars, 1910s. No people.",
+ "sch_07_classroom":   "An empty medical school lecture room with wooden benches and a blackboard, 1910s. No people.",
+ "sch_08_medal":   "A medal resting in an open velvet presentation case. Close view. No people.",
+ "sch_09_grave":   "Rows of low uniform gravestones in a national cemetery in winter, seen from a distance, bare trees. No people.",
+
+ # 10화 이육사 — 대구형무소·시
+ "yuk_01_cell":    "A prison corridor of the 1920s: a heavy riveted iron door in a plaster wall, and an old worn enamel number plate fixed beside it. Numbers weathered and unreadable. No people.",
+ "yuk_02_desk":    "An old sheet of Korean manuscript paper with ruled squares on a low wooden desk, a fountain pen and an ink stone beside it. Text unreadable. No people.",
+ "yuk_03_bank":    "A distant view of a 1920s Western-style bank building of grey stone in a colonial Korean town, arched windows, empty street in front. No people.",
+ "yuk_04_leaflet": "A night alley wall in a 1930s Korean town with torn printed handbills pasted on it and loose sheets of paper scattered on the ground. Text unreadable. No people.",
+ "yuk_05_drill":   "A bare packed-earth drill ground in southern China, a low brick wall and bamboo behind it, 1930s, overcast. No people.",
+ "yuk_06_brush":   "A calligraphy brush and ink stone on a sheet of paper with half-written strokes. Close view, characters indistinct and unreadable. No people.",
+ "yuk_07_vineyard": "A summer grape arbor with heavy vines and ripening bunches of grapes hanging under the leaves. Close view. No people.",
+ "yuk_08_station": "A 1940s railway platform with a steam locomotive standing at it, seen from far away, overcast sky. No people.",
+ "yuk_09_field":   "A vast empty plain under falling snow, a bare distant horizon line, no trees. No people.",
+
+ # 11화 조명하 — 1928 대만 타이중
+ "cho_01_street":  "A street in Taichung, Taiwan in the late 1920s: palm trees along a paved road and a Japanese colonial government building, empty road. No people.",
+ "cho_02_blade":   "A short dagger lying alone on a worn wooden table. Close view. No people.",
+ "cho_03_crowd":   "A very distant wide view of a welcoming crowd lining a colonial-era street, seen from far away; people only as an indistinct mass, no faces.",
+ "cho_04_shop":    "The interior of a 1920s Taiwanese shop: wooden display shelves and glass jars, dim light. No people.",
+ "cho_05_factory": "A 1920s Japanese factory workshop: workbenches, belt-driven machines and a grimy window. No people.",
+ "cho_06_gate":    "The front gate and stone pillars of a Japanese colonial government building, seen from a distance. No people.",
+ "cho_07_yard":    "A bare earth yard with a low wall and bamboo in southern Taiwan, overcast. No people.",
+ "cho_08_prison":  "A 1920s prison corridor with iron doors and a high barred window. No people.",
+ "cho_09_sea":     "Waves of a strait and a far horizon under an overcast sky. No people.",
+ "cho_10_school":  "An empty lecture room of a 1920s Japanese commercial school: rows of wooden desks, a blackboard and tall windows. No people.",
+
+ # 12화 권기옥 — 1925 윈난항공학교·중국 공군
+ # ⚠️ 마지막 컷은 실제 초상(커먼즈 PD)이므로 여기서 생성하지 않는다.
+ "kwon_01_airfield": "A dirt airfield in southern China in the 1920s seen from far away: a single biplane parked on bare packed earth, low hills behind, hazy sky. No people.",
+ "kwon_02_goggles":  "A pair of worn aviator goggles and a leather flying helmet lying on a wooden table. Close view. No people.",
+ "kwon_03_hangar":   "The side view of a biplane standing inside an open hangar, morning light falling through the doorway onto the earth floor. No people.",
+ "kwon_04_roster":   "An old paper roster sheet and a wooden seal stamp on a plain desk, 1920s. Close view, handwriting illegible. No people.",
+ "kwon_05_school":   "An empty classroom of a 1910s Korean girls' school: plain wooden desks, a blackboard, tall paper-paned windows. No people.",
+ "kwon_06_cockpit":  "The open cockpit of a 1920s biplane seen from above: round instrument dials and a control stick, worn leather rim. Close view. No people.",
+ "kwon_07_sky":      "A view above a layer of clouds, an indistinct horizon line far away, pale light. No aircraft, no people.",
+ "kwon_08_harbor":   "The Huangpu riverfront of Shanghai in the 1920s: a wooden jetty and moored steamships, seen from far away in mist. No people.",
+ "kwon_09_logbook":  "A worn flight logbook lying open on a desk with a fountain pen beside it. Close view, handwriting illegible. No people.",
+ "kwon_10_desk":     "A 1950s government office: a wooden desk with stacked document folders and a plain chair, shuttered window. No people.",
+ "kwon_11_road":     "A dirt road receding into winter fog across empty fields, bare distant trees. No people.",
+ "kwon_12_stone":    "A row of low gravestones in a national cemetery in winter, seen from far away, bare trees and pale light. Inscriptions illegible. No people.",
+ # 13화 후세 다쓰지 — 1911~1927 법정
+ "fuse_01_court":  "Interior of a 1920s Japanese courtroom: empty wooden public benches and tall windows. No people.",
+ "fuse_02_robe":   "A worn judicial robe hanging on a wooden stand in a dim room. Close view. No people.",
+ "fuse_03_tokyo":  "The stone facade of a 1920s Tokyo courthouse seen from a distance, overcast. No people.",
+ "fuse_04_seoul":  "A 1920s Keijo (Seoul) street of tiled roofs and utility poles, seen from far away. No people.",
+ "fuse_05_moat":   "A palace moat and stone bridge in early morning mist, seen from a distance. No people.",
+ "fuse_06_desk":   "An empty defense counsel's wooden table with a bundle of tied documents. Close view, handwriting illegible. No people.",
+ "fuse_07_paper":  "Old manuscript paper, a fountain pen and an ink bottle on a desk. Close view, handwriting illegible.",
+ "fuse_08_dorm":   "An empty 1910s Tokyo student boarding room: bare tatami and a low writing desk. No people.",
+ "fuse_09_medal":  "An old medal case and a folded ribbon. Close view. No people.",
+ "fuse_10_shelf":  "A dusty bookshelf with worn book spines in dim light. Close view, titles illegible.",
+ "fuse_11_strait": "Small waves of a strait and a far horizon under an overcast sky, seen from a distance. No people.",
+ # 14화 최익현 — 1906 태인의병
+ "choi_01_seowon": "The tiled eaves and empty courtyard of a Joseon confucian academy at early morning, 1900s. No people.",
+ "choi_02_flag":   "An old plain cotton banner tied to a bamboo pole. Close view, no legible writing. No people.",
+ "choi_03_field":  "Wide fields and low ridgelines of southwestern Korea, seen from a distance. No people.",
+ "choi_04_road":   "A dirt road and paddy banks after rain, village roofs far away. No people.",
+ "choi_05_ridge":  "Low misty hills and a bamboo grove over an empty field near Sunchang, seen from a distance. No people.",
+ "choi_06_gate":   "The closed wooden gate and stone steps of a Joseon government office. No people.",
+ "choi_07_hall":   "The interior of a Joseon government office: an empty chair and a low writing table, dim light. No people.",
+ "choi_08_brush":  "An inkstone, a brush and an unrolled sheet of hanji paper. Close view, writing illegible.",
+ "choi_09_sea":    "Winter waves of a strait and the shadow of a far island under an overcast sky. No people.",
+ "choi_10_cell":   "A prison room with stone walls and a high barred window, light falling on the floor. No people.",
+ "choi_11_dawn":   "The first winter daylight breaking over the sea and the horizon. No people.",
+
+ # 15화 신채호 — 1906~1936
+ "shin_01_wall":   "A high brick wall with barbed wire under an overcast winter sky, seen from a distance. No people.",
+ "shin_02_inkstone": "An old inkstone and a worn writing brush. Close view. No people.",
+ "shin_03_prison": "The red brick exterior and narrow windows of a 1930s Chinese prison in snow. No people.",
+ "shin_04_corridor": "A prison corridor lined with iron doors and high barred windows, light on the floor. No people.",
+ "shin_05_press":  "A 1900s newspaper letterpress machine and a typesetting table. Close view. No people.",
+ "shin_06_manuscript": "A stack of manuscript sheets, a fountain pen and a dim lamp. Close view, writing illegible.",
+ "shin_07_ledger": "The blank ruled columns of an old register and a seal stamp, dust. Close view, writing illegible.",
+ "shin_08_declaration": "A single folded printed sheet lying on a wooden table. Close view, text illegible.",
+ "shin_09_window": "A small barred window high on a cell wall with light seeping through. No people.",
+ "shin_10_paper":  "An empty modern document envelope and a seal stamp on a desk. Close view, text illegible.",
+ "shin_11_snow":   "A snow-covered yard and low wall, untouched white ground. No people.",
+ "shin_12_registers": "A stack of old household register books tied with cord on a government office desk. Close view, writing illegible. No people.",
+ # 17·18화 추가 컷
+ "park_12_lockup": "A 1920s police station lockup: wooden bars and a dark corridor with light falling on the floor. No people.",
+ "park_11_bowl":   "An untouched bowl of rice and a brass spoon on a prison cell floor. Close view. No people.",
+ "maria_11_tokyo": "A 1910s Tokyo western-style brick building and bare winter street trees, seen from a distance. No people.",
+ "maria_13_campus": "The stone buildings and lawn of a 1920s American university campus in autumn, seen from a distance. No people.",
+ "maria_12_clinic": "A small 1910s Korean clinic consulting room: a wooden desk and glass medicine bottles, dim window. No people.",
+ # 16화 이석영 — 1910 망명·신흥무관학교
+ "seok_01_field":  "A wide plain and low hills in Seogando, Manchuria in early spring, seen from a distance. No people.",
+ "seok_02_deed":   "Old Korean land deeds and a red seal on a low wooden table. Close view, writing illegible. No people.",
+ "seok_03_river":  "The frozen Amnok river and the bare plain on the far bank in winter, seen from a distance. No people.",
+ "seok_04_school": "A log schoolhouse and a low fence alone on the Manchurian plain, early spring. No people.",
+ "seok_05_gate":   "The tall gate and stone wall of a Joseon aristocratic house, closed doors. No people.",
+ "seok_06_yard":   "A bare earth parade ground and a bell hanging on a wooden post, morning light. No people.",
+ "seok_07_road":   "A snow-covered border road with cart wheel ruts, seen from a distance. No people.",
+ "seok_08_alley":  "A narrow back alley of 1930s Shanghai: brick walls and washing lines. No people.",
+ "seok_09_bowl":   "A chipped earthenware bowl and a wooden spoon on a worn low table. Close view. No people.",
+ "seok_11_grave":  "Low gravestones and dry grass in an old public cemetery under pale light, seen from a distance. Inscriptions illegible. No people.",
+ "seok_10_hall":   "The interior of a simple log meeting house in Manchuria: a bare earthen floor, a long plank table and low benches. No people.",
+
+ # 17화 박재혁 — 1920 부산경찰서 투탄
+ "park_01_station": "The stone facade and closed door of a 1920s Japanese-style police station, seen from a distance. No people.",
+ "park_02_books":   "A pile of old Korean-bound books tied with cord. Close view, titles illegible. No people.",
+ "park_03_shelf":   "Shelves packed with old Chinese books and dust. Close view, titles illegible. No people.",
+ "park_04_bundle":  "A bundle of books wrapped in cloth with a tie, on a wooden floor. Close view. No people.",
+ "park_05_table":   "A 1920s office: a wooden table with two chairs facing each other, a dim window. No people.",
+ "park_06_harbor":  "The wooden jetty and moored boats of 1920s Busan harbour with far hills, seen from a distance. No people.",
+ "park_07_smoke":   "A room with a shattered window, scattered paper and drifting smoke. No people.",
+ "park_08_pier":    "The hull of a steamship and mooring ropes at a 1920s Shanghai pier in mist. No people.",
+ "park_09_cell":    "A prison cell with a stone floor and a high barred window, light falling in. No people.",
+ "park_10_sea":     "An early spring sea and a far horizon under an overcast sky. No people.",
+
+ # 18화 김마리아 — 1919 2·8독립선언서
+ "maria_02_obi":    "A folded kimono sash with a folded sheet of paper lying on it. Close view, text illegible. No people.",
+ "maria_03_paper":  "Several old mimeographed sheets overlapping on a table. Close view, text illegible. No people.",
+ "maria_04_port":   "The wooden jetty and cargo of 1910s Busan harbour with a distant steamship. No people.",
+ "maria_05_school": "An empty 1910s Korean girls' school classroom with wooden desks and dim window light. No people.",
+ "maria_06_ship":   "The gunwale and mooring ropes of a ferry tied at a quay. Close view. No people.",
+ "maria_07_room":   "An empty meeting room with a round table and chairs, dim window. No people.",
+ "maria_08_court":  "The empty defendant's rail and wooden wall of a 1920s courtroom. No people.",
+ "maria_09_ward":   "A 1940s hospital corridor with an iron bed frame and tall windows. No people.",
+ "maria_10_quay":   "The stone steps of an empty winter quay and small ripples. No people.",
+
+ # 19화 헐버트 — 1905 워싱턴·1907 헤이그
+ "hul_01_capitol":   "A 1900s Washington stone government building and its steps, seen from a distance. No people.",
+ "hul_02_letter":    "An old envelope sealed with wax. Close view, writing illegible. No people.",
+ "hul_03_door":      "A closed wooden government office door with a brass handle and a long corridor. Close view. No people.",
+ "hul_04_hague":     "A 1900s Dutch city canal and gabled houses, seen from a distance. No people.",
+ "hul_05_book":      "An open old textbook printed in Korean hangul type. Close view, text illegible. No people.",
+ "hul_06_classroom": "An empty 1880s western-style schoolroom in Korea: wooden desks and a blackboard. No people.",
+ "hul_07_pier":      "The wooden steps of a 1940s Incheon pier and a moored ship under a cloudy sky. No people.",
+ "hul_08_grave":     "A single low gravestone on grass with autumn leaves, seen from a distance. Inscription illegible. No people.",
+ "hul_09_medal":     "An old medal case and a folded ribbon. Close view. No people.",
+ "hul_10_road":      "A misty river and low hills at early morning, seen from a distance. No people.",
+
+ # 20화 안규홍 — 1908 보성의병
+ "ahn20_01_village": "A rural Jeolla village of thatched roofs and stone walls in the 1900s, seen from a distance. No people.",
+ "ahn20_02_tool":    "A worn A-frame carrier and a sickle leaning against an earthen wall. Close view. No people.",
+ "ahn20_03_hill":    "Low southern Korean hills and paddies in early spring mist, seen from a distance. No people.",
+ "ahn20_04_lamp":    "An oil lamp and a few bowls in an earthen-floored room at night. Close view. No people.",
+ "ahn20_05_ridge":   "Dry silver grass on a ridge with drifting smoke under a cloudy sky, seen from a distance. No people.",
+ "ahn20_06_path":    "A narrow mountain path through a bamboo grove with footprints, seen from a distance. No people.",
+ "ahn20_07_field":   "An empty harvested paddy with rice straw bundles in late autumn light, seen from a distance. No people.",
+ "ahn20_08_yard":    "An earthen yard with stacked firewood and a worn straw mat. Close view. No people.",
+ "ahn20_09_court":   "The empty wooden rail and tall windows of a 1910s courtroom. No people.",
+ "ahn20_10_wall":    "The brick wall and iron gate outside a prison at early morning. No people.",
+ "ahn20_11_sky":     "An early summer sky and a far mountain ridge, seen from a distance. No people.",
+}
+
+
+def generate(key, scene):
+    path = os.path.join(OUT, key + ".png")
+    prompt = (f"Generate one image and save it to the absolute path {path}\n\n"
+              f"Image: {scene} {STYLE}")
+    r = subprocess.run(["codex", "exec", "--skip-git-repo-check",
+                        "--sandbox", "workspace-write", prompt],
+                       cwd=BASE, capture_output=True, text=True)
+    ok = os.path.exists(path) and os.path.getsize(path) > 50_000
+    return ok, (r.stdout or "")[-400:] + (r.stderr or "")[-400:]
+
+
+def main(prefixes):
+    keys = [k for k in SCENES if not prefixes or any(k.startswith(p) for p in prefixes)]
+    made = skipped = 0
+    for k in keys:
+        path = os.path.join(OUT, k + ".png")
+        if os.path.exists(path) and os.path.getsize(path) > 50_000:
+            print(f"  {k:18s} 있음 — 건너뜀"); skipped += 1; continue
+        ok, tail = generate(k, SCENES[k])
+        if not ok:
+            print(f"  {k:18s} ❌ 실패 — 여기서 멈춘다\n{tail}")
+            print(f"\n생성 {made}장 / 건너뜀 {skipped}장 / 남은 {len(keys)-made-skipped}장")
+            return 1
+        print(f"  {k:18s} ✅ {os.path.getsize(path):,} bytes"); made += 1
+    print(f"\n생성 {made}장 / 건너뜀 {skipped}장 — 전부 채움")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

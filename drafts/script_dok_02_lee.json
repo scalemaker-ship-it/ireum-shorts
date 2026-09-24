@@ -1,0 +1,178 @@
+{
+  "series": "이름을 부르다",
+  "episode": 2,
+  "title": "그는 가진 것을 하나씩 버렸다",
+  "subject": "이회영 (李會榮, 우당, 1867~1932.11.17)",
+  "award": "건국훈장 독립장 (1962 추서)",
+  "voice": {
+    "speaker_M": "Piljae",
+    "model": "ssfm-v30",
+    "emotion_preset": "tonedown",
+    "speed": 0.95
+  },
+  "sources": [
+    "공훈전자사료관 이회영 https://e-gonghun.mpva.go.kr/user/IndepCrusaderDetail.do?goTocode=20003&mngNo=8949",
+    "한국민족문화대백과사전 이회영 https://encykorea.aks.ac.kr/Article/E0046635",
+    "독립기념관 월간지(김형목) 자유주의자 이회영과 이은숙 https://www.i815.or.kr/upload/kr/magazine/magazine/43/post-456.html",
+    "한국민족문화대백과사전 서간도 시종기 https://encykorea.aks.ac.kr/Article/E0027558"
+  ],
+  "verified": {
+    "_검증일": "2026-09-09 전면 재검증 (문장 단위 대조)",
+    "생몰": "1867 ~ 1932-11-17",
+    "가문": "'9대가 정승 판서 참판을 지낸 명문가 자손', '백사 이항복의 10대손' — 공훈록 원문. 아버지 이유승은 '판서를 지낸'(백과사전)",
+    "노비해방": "'스무 살을 지나면서부터 집안의 노비에 대해 존대 말을 씀은 물론 평민으로 풀어주기' — 공훈록 원문",
+    "누이재가": "'청상과부가 된 누이동생들의 재혼을 주선' — 공훈록. '집안의 반대를 무릅쓰고'는 독립기념관 자료",
+    "망명": "1910년 국치 후, 6형제와 50여 가족 — 공훈록",
+    "신흥무관학교": "1912년 설립 — 공훈록·백과사전 일치. 언론의 1911년(신흥강습소 기준)과 다르므로 1912로 표기",
+    "이은숙": "1925년 홀로 귀국, 공장 노동·삯바느질로 생활비와 독립운동 자금 마련 — 독립기념관 자료",
+    "1932_경로": "'주만일본군사령관 암살을 목적으로 상해에서 대련으로 향하던 도중, 대련의 일본수상경찰에 잡혀 악독한 고문 끝에 옥사' — 백과사전 원문. 1912년 만주 이후 1932년 만주행 사이가 비어 보이던 문제를 '상하이에서 배를 탔다'로 메움",
+    "순국": "1932-11-17 다롄에서 체포, 고문 끝에 순국, 65세 — 공훈록. 순국 장소가 공훈록 '다롄 항구'와 일부 자료 '뤼순감옥'으로 갈려 대본은 '다롄에 닿자마자 붙잡혀'로 처리",
+    "서훈": "건국훈장 독립장 (1962) — 공훈록·백과사전 일치",
+    "제외한_소재": "재산 규모 '2조원'은 언론 추산치라 쓰지 않음. 아나키즘 단체명은 이념 논쟁 소지가 있어 언급하지 않음. 동생 이시영이 초대 부통령이고 후손 중 현직 광복회장이 있어 정치 언급은 일절 배제",
+    "삭제된_해석": [
+      "'신분과 관습을 차례로 버린 셈이었다' — 사료가 아니라 내 요약이라 삭제"
+    ],
+    "초상": "위키미디어 커먼즈 'Lee Hoe-yeong.jpg' — 퍼블릭 도메인, 1920년대. 원본 1024×1408 전신 사진에서 상반신을 직접 잘라 썼다(이전에는 142×188 저해상도 크롭을 쓰고 있었다). 주의: 같은 인물의 'Yi Heoyeong.jpg'는 2021년 제작물로 CC BY-SA라 쓰면 안 된다",
+    "브랜드_음성": "「이름을 부르다. 오늘 부를 이름.」은 매 회차 반복되는 시그니처라 **확정 테이크(common_B_brand.wav)를 고정**한다. 회차마다 새로 합성했더니 TTS 비결정성으로 톤이 갈렸다 — 영교차율 실측 13,723~17,560으로 28% 편차, 5화가 눈에 띄게 가벼웠다. 2화 테이크가 가장 묵직해 그것으로 확정. 파일은 이미 1.15배속·레벨 정규화가 적용된 상태다(locked_audio는 배속을 다시 걸지 않는다)"
+  },
+  "segments": [
+    {
+      "id": "01_hook",
+      "speaker": "M",
+      "year": 1900,
+      "text": "9대가 정승과 판서를 지낸 집안이었다. 그런 집 아들이 스무 살부터 집안의 노비들에게 존댓말을 썼고, 하나씩 평민으로 풀어줬다.",
+      "image": "output/images/lee_01_house.png"
+    },
+    {
+      "id": "02_brand",
+      "speaker": "M",
+      "year": 1900,
+      "text": "이름을 부르다. 오늘 부를 이름.",
+      "image": "output/images/lee_02_papers.png",
+      "locked_audio": "output/audio/locked_takes/common_B_brand.wav"
+    },
+    {
+      "id": "03_setup",
+      "speaker": "M",
+      "year": 1900,
+      "text": "청상과부가 된 누이동생들은 집안의 반대를 무릅쓰고 다시 시집보냈다.",
+      "image": "output/images/lee_03_palanquin.png"
+    },
+    {
+      "id": "04_hint1",
+      "speaker": "M",
+      "year": 1910,
+      "text": "1910년 나라를 빼앗기자, 여섯 형제가 재산을 모두 처분하고 온 가족과 함께 국경을 넘었다.",
+      "image": "output/images/lee_04_border.png"
+    },
+    {
+      "id": "05_hint2",
+      "speaker": "M",
+      "year": 1912,
+      "text": "만주의 황무지에 학교를 세웠다. 훗날 청산리에서 싸운 이들이 그 학교에서 나왔다.",
+      "image": "output/images/lee_05_school.png"
+    },
+    {
+      "id": "06_reveal",
+      "speaker": "M",
+      "year": 1912,
+      "text": "그 학교의 이름은 신흥무관학교. 세운 사람의 이름은, 이회영.",
+      "image": "output/images/lee_06_drill.png"
+    },
+    {
+      "id": "07_echo",
+      "speaker": "M",
+      "year": 1925,
+      "text": "재산이 바닥나자, 아내가 홀로 귀국해 공장에 다니고 삯바느질을 하며 자금을 보내왔다.",
+      "image": "output/images/lee_07_sewing.png"
+    },
+    {
+      "id": "08_quote",
+      "speaker": "M",
+      "year": 1932,
+      "text": "1932년, 그는 상하이에서 배를 탔다. 만주의 일본군 사령관을 암살하려는 길이었다.",
+      "image": "output/images/lee_08_harbor.png"
+    },
+    {
+      "id": "08b_quote",
+      "speaker": "M",
+      "year": 1932,
+      "text": "배가 다롄에 닿자마자 붙잡혀, 고문 끝에 숨을 거두었다. 예순다섯이었다.",
+      "image": "output/images/lee_09_cell.png"
+    },
+    {
+      "id": "09_cta",
+      "speaker": "M",
+      "year": 1932,
+      "text": "오늘 우리가 부른 이름. 이회영. 기억하겠습니다.",
+      "locked_audio": "output/audio/endings/ep02_lee_ending_take1.wav",
+      "reveal_points": [
+        [
+          0.1039,
+          0
+        ],
+        [
+          0.3635,
+          13
+        ],
+        [
+          0.509,
+          13
+        ],
+        [
+          0.6572,
+          18
+        ],
+        [
+          0.813,
+          18
+        ],
+        [
+          0.9809,
+          26
+        ]
+      ],
+      "image": "assets/photos/lee_hoeyoung_portrait.jpg",
+      "nameplate": true
+    }
+  ],
+  "display_title": "그는 가진 것을 하나씩 버렸다",
+  "nameplate": [
+    "이회영",
+    "1867 – 1932"
+  ],
+  "portrait": "assets/photos/lee_hoeyoung_portrait.jpg",
+  "credit": [
+    "자료 · 국가보훈부 공훈전자사료관, 한국민족문화대백과사전",
+    "사진 · 위키미디어 커먼즈 (퍼블릭 도메인)"
+  ],
+  "silence_before": "06_reveal",
+  "pause_after": {
+    "02_brand": 1.4,
+    "06_reveal": 1.2
+  },
+  "name_at": 0.8,
+  "output": "output/최종본/dok_02_lee.mp4",
+  "audio_dir": "output/audio/dok_02",
+  "upload": {
+    "tags": [
+      "독립운동가",
+      "한국사",
+      "근현대사",
+      "역사",
+      "항일운동",
+      "순국선열",
+      "이회영",
+      "우당 이회영",
+      "신흥무관학교",
+      "경학사",
+      "shorts"
+    ],
+    "playlists": [
+      "전부 부른 이름"
+    ],
+    "hashtags_extra": [
+      "신흥무관학교"
+    ]
+  }
+}
