@@ -76,7 +76,15 @@ def main(script_path, out_dir, only=None):
         if seg.get("locked_audio"):     # 확정 테이크는 건드리지 않는다
             print(f"  {seg['id']:12s} skip (locked)")
             continue
-        d = synth(key, vid, seg["text"], os.path.join(out_dir, f"{seg['id']}.wav"))
+        if seg.get("kind") in ("reveal", "ending"):   # v3 — 공용 음성 + 이름으로 조립한다
+            print(f"  {seg['id']:12s} skip ({seg['kind']})")
+            continue
+        # v3 자막 강조 표시(`*단어*`)는 화면용이다. 그대로 보내면 별표를 읽을 수 있다.
+        # ⚠️ 문장은 **통째로** 합성한다. 2026-09-25에 자막 줄(" / ")마다 따로 뽑아 이어 붙이는
+        # 방식을 시도했다가 나레이션이 끊겨 들려 사용자가 즉시 되돌리게 했다.
+        # 자막 타이밍은 렌더러가 글자 수 비율로 맞춘다 — 음성을 자르지 않는다.
+        text = seg["text"].replace("*", "").replace(" / ", " ")
+        d = synth(key, vid, text, os.path.join(out_dir, f"{seg['id']}.wav"))
         total += d
         print(f"  {seg['id']:12s} {d:5.2f}s")
     print(f"\n합계 {total:.1f}s  (1.15배속 적용 시 {total / 1.15:.1f}s)")

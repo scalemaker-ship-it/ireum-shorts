@@ -20,6 +20,14 @@ STYLE = ("Documentary still-photograph look, aged monochrome/sepia archival phot
          "No identifiable faces (people only as distant figures, silhouettes, or from behind). "
          "No text, no captions, no watermarks, no modern objects.")
 
+# v3 컬러 회차(PRD v3 — 2026-09-24 사용자 지시 "사진은 컬러로").
+# 여기 적힌 접두어로 시작하는 장면은 세피아 대신 이 스타일로 뽑는다.
+STYLE_COLOR = ("Cinematic documentary still in natural, slightly muted color, as if shot on 35mm film: "
+               "soft film grain, gentle contrast, realistic light, landscape orientation 4:3. "
+               "No identifiable faces (people only as distant figures, silhouettes, or from behind). "
+               "No text, no captions, no watermarks, no modern objects.")
+COLOR_PREFIXES = ("chu_", "yun_", "sam_")
+
 SCENES = {
  # 6화 김익상 — 1921 조선총독부 투탄
  "kim_01_hall":   "A 1920s colonial government office corridor in Korea right after a bomb blast: shattered window glass on the floor, drifting smoke, an overturned wooden chair, scattered papers. No people.",
@@ -206,13 +214,48 @@ SCENES = {
  "ahn20_09_court":   "The empty wooden rail and tall windows of a 1910s courtroom. No people.",
  "ahn20_10_wall":    "The brick wall and iron gate outside a prison at early morning. No people.",
  "ahn20_11_sky":     "An early summer sky and a far mountain ridge, seen from a distance. No people.",
+ # v3-1 추푸청 — 1932 윤봉길 의거 뒤 김구 피신 (컬러, STYLE_COLOR)
+ "chu_01_park":    "Hongkou Park in Shanghai in spring 1932 seen from a distance: an empty speakers' platform draped with cloth, trampled grass, drifting smoke. No people.",
+ "chu_02_notice":  "A wanted poster pasted on a weathered 1930s Shanghai brick wall, torn edges, rain streaks. Text unreadable and blurred. No people.",
+ "chu_03_street":  "A 1930s Shanghai French Concession street at dusk: plane trees, shuttered shop fronts, wet cobblestones, a single tram in the distance. No people.",
+ "chu_04_study":   "A 1930s Chinese scholar's study: a rosewood desk with an inkstone, stacked thread-bound books and a lamp, lattice window. No people.",
+ "chu_05_train":   "A 1930s steam train crossing flat green Jiangnan farmland seen from far away, white smoke trailing. No people.",
+ "chu_06_canal":   "A quiet canal town in Jiaxing, China in the 1930s: whitewashed houses with black tiled roofs reflected in still water, stone bridge. No people.",
+ "chu_07_mill":    "The interior of a small 1930s paper mill: stacks of paper, wooden drying racks, light through high windows. No people.",
+ "chu_08_boat":    "A small wooden rowboat with a woven bamboo canopy drifting on a misty South Lake in Jiaxing, reeds at the edge. Figures only as a tiny silhouette from behind at the stern.",
+ "chu_09_path":    "A narrow mountain path through bamboo and tea bushes near the sea in Haiyan, China, soft morning light. No people.",
+ "chu_10_villa":   "A modest 1930s Chinese villa with a tiled roof on a hillside by the sea, seen from a distance, overcast. No people.",
+ "chu_11_lake":    "South Lake in Jiaxing at dawn: a calm lake, a pavilion on a small island far away, pale mist. No people.",
+ "chu_12_letter":  "An old handwritten letter in Chinese brush script and a folded envelope on a wooden table beside a teacup. Close view, writing illegible. No people.",
+ # v3-02 김용환 — 안동 학봉 종손, 군자금 (흑백 렌더)
+ "kyh_01_tujeon":   "A low wooden table in a dim 1920s Korean room: scattered old playing sticks (tujeon), a brass bowl of coins, a spilled rice-wine cup, an oil lamp. Close view. No people.",
+ "kyh_02_jongtaek": "A large traditional Korean head-family house (jongtaek) in Andong: tiled roofs, wooden pillars, stone steps, an old zelkova tree, morning haze, seen from a distance. No people.",
+ "kyh_03_manchuria":"A vast winter plain in Manchuria under a grey sky, a distant line of low log buildings and bare trees, thin snow. No people.",
+ "kyh_04_bridge":   "The long iron railway bridge over the Amnok river at Sinuiju around 1920 seen from the riverbank, a steam train small in the distance, mist. No people.",
+ "kyh_05_cell":     "A 1920s prison corridor: a heavy iron door with a small barred window, plaster wall, faint light on a stone floor. No people.",
+ "kyh_06_road":     "A dirt road between rice paddies leading toward distant mountains in Andong, overcast, a single roadside marker stone. No people.",
+ "kyh_07_house":    "The gate of a Korean aristocratic house left open, yard swept, a wooden signboard above the gate with characters unreadable, late afternoon light. No people.",
+ "kyh_08_field":    "Wide paddy fields in front of a tiled-roof Korean house, early summer, water reflecting the sky, seen from a slight height. No people.",
+ "kyh_09_letter":   "A sheet of Korean hanji paper with vertical brush handwriting and a folded envelope on a low wooden table, a worn brush beside it. Close view, writing illegible. No people.",
+ "kyh_10_medal":    "An old medal on a folded ribbon resting on a plain wooden shelf next to a small framed empty photo mount, soft window light. Close view. No people.",
+ # v3-03 윤봉길 — 1932 훙커우 의거, 김구와 바꾼 시계 (컬러)
+ "yun_01_watch":   "Two old pocket watches lying side by side on a plain wooden table in a 1930s Shanghai room, morning light from a window, one watch slightly worn. Close view. No people.",
+ "yun_02_park":    "Hongkou Park in Shanghai on a spring morning in 1932: a large wooden ceremonial platform draped in cloth, rows of empty chairs, trees in fresh leaf. No people.",
+ "yun_03_village": "A rural village in Chungcheong, Korea in the 1920s: thatched-roof houses, a small night-school building with a paper lantern, fields at dusk. No people.",
+ "yun_04_classroom":"A small 1920s Korean village night school interior: low wooden desks, a blackboard, an oil lamp, a few worn books. No people.",
+ "yun_05_road":    "A dirt road leaving a Korean village at dawn, frost on the ground, a lone bundle on a stick resting against a roadside tree. No people.",
+ "yun_06_shanghai":"A 1930s Shanghai street seen from a distance: rickshaws, signboards with unreadable characters, plane trees, morning haze. Figures only as distant silhouettes.",
+ "yun_07_breakfast":"A simple breakfast on a low table in a 1930s Shanghai lodging: two bowls of rice, kimchi, a teapot, sunlight on the table. Close view. No people.",
+ "yun_08_letter":  "A handwritten letter in Korean brush script on thin paper, folded once, lying beside a fountain pen on a dark desk. Close view, writing illegible. No people.",
+ "yun_09_snow":    "A bare hillside near Kanazawa, Japan in December: thin snow, a few dark pines, grey sky, a narrow path. No people.",
+ "yun_10_hyochang":"Hyochang Park in Seoul: a grassy burial mound with a stone marker, pine trees, soft afternoon light. Inscription illegible. No people.",
 }
 
 
 def generate(key, scene):
     path = os.path.join(OUT, key + ".png")
     prompt = (f"Generate one image and save it to the absolute path {path}\n\n"
-              f"Image: {scene} {STYLE}")
+              f"Image: {scene} {STYLE_COLOR if key.startswith(COLOR_PREFIXES) else STYLE}")
     r = subprocess.run(["codex", "exec", "--skip-git-repo-check",
                         "--sandbox", "workspace-write", prompt],
                        cwd=BASE, capture_output=True, text=True)
