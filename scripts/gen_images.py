@@ -249,6 +249,17 @@ SCENES = {
  "yun_08_letter":  "A handwritten letter in Korean brush script on thin paper, folded once, lying beside a fountain pen on a dark desk. Close view, writing illegible. No people.",
  "yun_09_snow":    "A bare hillside near Kanazawa, Japan in December: thin snow, a few dark pines, grey sky, a narrow path. No people.",
  "yun_10_hyochang":"Hyochang Park in Seoul: a grassy burial mound with a stone marker, pine trees, soft afternoon light. Inscription illegible. No people.",
+ # v3-04 사명대사 — 1604~05 일본행, 포로 3천여 명 송환 (컬러)
+ "sam_01_sea":     "A single wooden Joseon sailing ship crossing a grey strait toward distant islands at dawn, 17th century, mist on the water. No people.",
+ "sam_02_temple":  "A quiet Joseon-era mountain temple courtyard in autumn: stone lantern, wooden hall, fallen leaves, a monk's straw sandals on the step. No people.",
+ "sam_03_ruins":   "A burned Korean village after the Imjin war, 1590s: charred timber, broken tiled roofs, an empty road, smoke in the distance. No people.",
+ "sam_04_chains":  "A pile of rusted iron shackles and rope on a stone floor of a 17th-century Japanese port warehouse, dim light. Close view. No people.",
+ "sam_05_kyoto":   "Kyoto in the early 17th century seen from a distance: tiled roofs, a castle keep, pine trees, morning haze. No people.",
+ "sam_06_hall":    "A Japanese castle audience hall of the early 1600s: tatami floor, gold-leaf sliding screens, a low writing table, soft light. No people.",
+ "sam_07_road":    "A long line of people walking along a coastal road toward a harbor at sunset, seen from far away as tiny silhouettes, 17th century Japan.",
+ "sam_08_harbor":  "Busan harbor in the early 17th century: wooden ships moored, low hills, a stone quay, spring light. No people.",
+ "sam_09_brush":   "A calligraphy brush, inkstone and a sheet of paper with a few vertical strokes on a low wooden table in a temple room. Close view, characters unreadable. No people.",
+ "sam_10_shrine":  "The wooden shrine hall of Pyochungsa in Miryang, Korea: red pillars, a signboard with characters unreadable, pine trees, soft afternoon light. No people.",
 }
 
 
