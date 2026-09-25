@@ -26,7 +26,19 @@ STYLE_COLOR = ("Cinematic documentary still in natural, slightly muted color, as
                "soft film grain, gentle contrast, realistic light, landscape orientation 4:3. "
                "No identifiable faces (people only as distant figures, silhouettes, or from behind). "
                "No text, no captions, no watermarks, no modern objects.")
-COLOR_PREFIXES = ("chu_", "yun_", "sam_")
+COLOR_PREFIXES = ("chu_", "yun_", "sam_", "nsj_")
+
+# v3 삽화 회차 (2026-09-25 사용자 지시 — "장면에 이 사람을 등장시켜라, 얼굴 정면은 쓰지 말고 실사보다 그림체로").
+# 주인공 인상착의를 CHARACTER에 고정해 모든 컷에 붙인다 — 컷마다 다른 사람처럼 보이지 않게.
+STYLE_ILLUST = ("Painted historical illustration, like a Korean graphic-novel panel: textured brush strokes, "
+                "muted warm palette, cinematic lighting, landscape orientation 4:3. "
+                "The main character appears in the scene but NEVER with a frontal face — show him from behind, "
+                "in side silhouette turned away, in shadow, or only his hands. Other people only as distant figures. "
+                "No text, no captions, no watermarks, no modern objects.")
+ILLUST = {           # 접두어 → 주인공 인상착의
+    "lyj_": ("a slim Korean scholar in his fifties (1940s), short dark hair parted to the side, round black-rimmed glasses, "
+             "clean-shaven, wearing a grey traditional Korean hanbok with a white collar band. Always the same man."),
+}
 
 SCENES = {
  # 6화 김익상 — 1921 조선총독부 투탄
@@ -260,13 +272,42 @@ SCENES = {
  "sam_08_harbor":  "Busan harbor in the early 17th century: wooden ships moored, low hills, a stone quay, spring light. No people.",
  "sam_09_brush":   "A calligraphy brush, inkstone and a sheet of paper with a few vertical strokes on a low wooden table in a temple room. Close view, characters unreadable. No people.",
  "sam_10_shrine":  "The wooden shrine hall of Pyochungsa in Miryang, Korea: red pillars, a signboard with characters unreadable, pine trees, soft afternoon light. No people.",
+ # v3-05 나석주 — 1926 동척·식산은행 투탄 (컬러, 주인공은 뒷모습·실루엣만)
+ "nsj_01_street":  "A winter street in 1920s Seoul (Hwanggeum-jeong): tram tracks, electric poles, grey stone buildings. A man in a dark Chinese long gown and felt hat is seen only from behind, walking toward a large stone company building. Cinematic.",
+ "nsj_02_building":"The imposing stone facade of a 1920s Japanese colonial company headquarters in Seoul: tall columns, heavy doors, a Japanese flag, winter light, seen from the street. Figures only as tiny distant silhouettes.",
+ "nsj_03_fields":  "Korean tenant farmers seen from behind carrying heavy rice sacks along a dirt road toward a Japanese company warehouse in 1920s Hwanghae province, harvested fields, grey sky.",
+ "nsj_04_home":    "A poor thatched-roof farmhouse in Hwanghae, Korea in winter; a young man seen from behind standing at the edge of a field that is no longer his, looking at it.",
+ "nsj_05_letter":  "A handwritten Korean brush letter on a desk in a cold 1920s Chinese rented room, a revolver and a small cloth bundle beside it, a candle. Close view, writing illegible. No people.",
+ "nsj_06_bank":    "Interior of a 1920s colonial bank hall in Seoul: marble counter, clerks' desks, a round iron bomb lying unexploded on the floor in the foreground. People only as blurred silhouettes in the background.",
+ "nsj_07_stairs":  "A man in a dark overcoat seen from behind climbing the stone staircase inside a 1920s office building, a revolver in his hand, dramatic side light, dust in the air.",
+ "nsj_08_office":  "A 1920s Japanese company office in chaos: overturned chairs, scattered papers, drifting smoke, an unexploded round bomb on the wooden floor. No people.",
+ "nsj_09_chase":   "A snowy 1920s Seoul street at dusk: a lone man seen from behind running across tram tracks, blurred silhouettes of policemen chasing in the distance, motion blur.",
+ "nsj_10_pole":    "A dropped revolver and a felt hat lying in the snow beside a wooden telegraph pole on an empty 1920s Seoul street at dusk. No people.",
+ # v3-06 이윤재 — 조선어학회 사건 (그림체, 주인공 등장·정면 얼굴 없음)
+ "lyj_01_cell":    "Inside a cold concrete solitary prison cell in winter; the scholar sits on the floor with his back to the viewer, loose handwritten manuscript pages scattered around him, a single shaft of pale light from a tiny barred window.",
+ "lyj_02_desk":    "A 1930s Seoul study at night lit by one oil lamp; the scholar seen from behind and slightly to the side, bent over a desk writing a Korean dictionary manuscript, stacks of paper and books around him.",
+ "lyj_03_cards":   "A long wooden table covered with thousands of small handwritten word index cards in wooden trays; only the scholar's hands and hanbok sleeves are visible, sorting the cards. Warm lamplight.",
+ "lyj_04_gate":    "Outside a colonial-era prison gate of red brick on a snowy morning; the scholar walks away from the gate, seen from behind, carrying a cloth-wrapped bundle of books under his arm.",
+ "lyj_05_diary":   "A schoolgirl's open diary on a wooden desk in a 1940s girls' school dormitory; a Japanese policeman's white-gloved hand points at one line. Text illegible. No faces.",
+ "lyj_06_arrest":  "A snowy night street in 1940s Korea; Japanese police in dark uniforms lead several Korean scholars in hanbok away, all seen from behind, the main scholar among them with his round glasses glinting in lamplight.",
+ "lyj_07_seized":  "Japanese policemen carrying wooden crates stuffed with manuscript bundles out of an office; the scholar stands in the foreground seen from behind, held by the arm, watching them.",
+ "lyj_08_room":    "A bare 1940s interrogation room: a wooden chair, a metal bucket of water, a single hanging bulb; the scholar's shadow cast large on the wall, his figure turned away. Somber, no gore.",
+ "lyj_09_dawn":    "A solitary prison cell at a freezing winter dawn; the scholar's silhouette slumped against the wall, turned away from the viewer, breath mist in the air, his round glasses lying on the floor.",
+ "lyj_10_station": "A dim 1945 Seoul railway station warehouse; a station worker seen from behind opens a wooden crate full of yellowed Korean manuscript bundles, dust glittering in the light from a half-open door.",
 }
+
+
+def _style_for(key, scene):
+    for pre, who in ILLUST.items():
+        if key.startswith(pre):
+            return f"Image: {scene} Main character: {who} {STYLE_ILLUST}"
+    return f"Image: {scene} {STYLE_COLOR if key.startswith(COLOR_PREFIXES) else STYLE}"
 
 
 def generate(key, scene):
     path = os.path.join(OUT, key + ".png")
     prompt = (f"Generate one image and save it to the absolute path {path}\n\n"
-              f"Image: {scene} {STYLE_COLOR if key.startswith(COLOR_PREFIXES) else STYLE}")
+              + _style_for(key, scene))
     r = subprocess.run(["codex", "exec", "--skip-git-repo-check",
                         "--sandbox", "workspace-write", prompt],
                        cwd=BASE, capture_output=True, text=True)

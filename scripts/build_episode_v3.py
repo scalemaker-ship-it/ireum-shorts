@@ -32,6 +32,10 @@ from build_episode import SEG_TARGET_DB, mean_db, voiced_end, wav_dur  # noqa: E
 GAP_MAX = 0.18
 TAIL_KEEP = 0.08
 import make_bgm  # noqa: E402
+import motion_fx as MFX  # noqa: E402
+
+# 영상 효과 (2026-09-25 사용자 — "이미지 나열이 아니라 영상처럼"). 대본 "motion": true로 켠다.
+MOTION = False
 
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 FONT_DIR = os.path.join(BASE, "assets/fonts")
@@ -132,6 +136,7 @@ class Shot:
         self.zoom_in = rnd.random() < 0.6
         self.dir = rnd.choice([(1, 0), (-1, 0), (0.6, 0.4), (-0.6, 0.4), (0.5, -0.4)])
         self.pace = pace
+        self.seed = seed % 13
         self.vig, self.vig_k = _vignette(bw, bh)
         self.feather = _feather(bw, bh)
         self.grain = _grain_tiles(bw, bh)
@@ -155,6 +160,10 @@ class Shot:
         dx, dy = self.dir
         cx = sw / 2 + dx * min((sw - cw) / 2, sw * drift) * (t * 2 - 1)
         cy = sh / 2 + dy * min((sh - ch) / 2, sh * drift) * (t * 2 - 1)
+        if MOTION:                                # 손에 든 카메라처럼 미세하게 떠다닌다
+            hx, hy = MFX.handheld(fi, amp=6.0, seed=self.seed)
+            cx += hx * sw / bw
+            cy += hy * sh / bh
         x0 = max(0, min(sw - cw, cx - cw / 2))
         y0 = max(0, min(sh - ch, cy - ch / 2))
         v = self.src.crop((int(x0), int(y0), int(x0 + cw), int(y0 + ch))).resize(self.box, Image.BILINEAR)
@@ -354,7 +363,10 @@ def build_audio(script, audio_dir, tmp):
             # 호명 문구·마무리 문장은 공용 음성, 이름은 캐리어 문장에서 잘라낸 회차 음성(name_audio).
             pieces = [("pre", silence(REVEAL_PRE, os.path.join(tmp, "pre.wav")))]
             if script.get("name_audio"):
-                pieces += [("call", norm(os.path.join(LOCK, "common_v3_call.wav"), os.path.join(tmp, "call.wav"))),
+                call_src = os.path.join(BASE, script["reveal_call_audio"]) if script.get("reveal_call_audio") \
+                    else os.path.join(LOCK, "common_v3_call.wav")
+                pieces += [("call", norm(call_src, os.path.join(tmp, "call.wav"),
+                                         speed=speed if script.get("reveal_call_audio") else None)),
                            ("gap1", silence(0.45, os.path.join(tmp, "gap1.wav"))),
                            ("name", norm(name_wav, os.path.join(tmp, "name.wav"))),
                            ("gap2", silence(0.6, os.path.join(tmp, "gap2.wav")))]
@@ -431,9 +443,21 @@ def build_bgm(dst, total, timeline, script=None):
 
 # ───────────────────────── 화면 ─────────────────────────
 
+_PARTICLES = {}
+
+
 def body_frame(paper, shot, seg, pages, font, t, fi, lt, title, ai, caption=True):
     fr = paper.copy()
     v = shot.view(t, fi)
+    if MOTION:
+        kind = seg.get("fx", "dust")
+        if kind != "none":
+            key = (kind, v.size)
+            if key not in _PARTICLES:
+                _PARTICLES[key] = MFX.Particles(kind, v.size, seed=len(_PARTICLES) + 3)
+            v = _PARTICLES[key].apply(v, fi)
+        if COLOR_MODE:
+            v = MFX.light_leak(v, fi, seed=shot.seed)
     fr.paste(v, (0, PHOTO_TOP), shot.feather)
     d = ImageDraw.Draw(fr)
     draw_title(fr, title)
@@ -446,7 +470,32 @@ def body_frame(paper, shot, seg, pages, font, t, fi, lt, title, ai, caption=True
     return draw_caption_at(fr, pages, font, lt)
 
 
-def draw_caption_at(fr, pages, font, lt, bounds=None):
+def _caption_popped(fr, line, font, since):
+    """자막 한 줄을 레이어로 그려 튀어 오르게 얹는다 (since = 이 줄이 뜬 뒤 흐른 초)."""
+    k = since / 0.22
+    if k >= 1:
+        draw_lines(fr, line, font, CAP_TOP)
+        return fr
+    pad = 40
+    layer = Image.new("RGBA", (W, CAP_LINE + pad * 2), (0, 0, 0, 0))
+    draw_lines(layer, line, font, pad)
+    layer, dy = MFX.pop(layer, max(0.0, k))
+    out = fr.convert("RGBA")
+    out.alpha_composite(layer, (0, CAP_TOP - pad + dy))
+    return out.convert("RGB")
+
+
+def draw_caption_at(fr, pages, font, lt, bounds=None, seg_dur=None):
+    if MOTION and seg_dur:
+        counts = [sum(len(l[0]) for l in p) for p in pages]
+        tot, acc, pi = sum(counts), 0, 0
+        for k, c in enumerate(counts):
+            if lt * TYPE_RATIO < (acc + c) / tot or k == len(counts) - 1:
+                pi = k
+                break
+            acc += c
+        page_start = acc / tot / TYPE_RATIO if pi else 0
+        return _caption_popped(fr, pages[pi], font, (lt - page_start) * seg_dur)
     """진행도 lt에 맞는 자막 장을 그린다. 전환 페이드와 분리해 자막끼리 겹치지 않게 한다.
 
     bounds = 줄 음성의 시작 지점 목록(세그먼트 안 진행비율). 있으면 그 시점에 장을 넘긴다.
@@ -470,6 +519,17 @@ def draw_caption_at(fr, pages, font, lt, bounds=None):
     if pi and lt - page_start < 0.06:               # 다음 장은 살짝 떠오르며 바뀐다
         a = max(0.0, (lt - page_start) / 0.06)
     return with_alpha(fr, lambda im: draw_lines(im, pages[pi], font, CAP_TOP), a)
+
+
+def transition(prev, cur, k):
+    """컷 전환. 모션 모드면 사진 밴드만 줌 푸시로, 아니면 크로스페이드."""
+    if not MOTION:
+        return Image.blend(prev, cur, k)
+    box = (0, PHOTO_TOP, W, PHOTO_TOP + PHOTO_H)
+    out = cur.copy()
+    band = MFX.push_transition(prev.crop(box), cur.crop(box), k)
+    out.paste(band, (0, PHOTO_TOP), _feather(W, PHOTO_H))
+    return out
 
 
 _TITLE_CACHE = {}
@@ -610,8 +670,9 @@ def main():
 
     paper = make_paper(W, H)
     title = script.get("display_title", "")
-    global COLOR_MODE
+    global COLOR_MODE, MOTION
     COLOR_MODE = bool(script.get("color", False))
+    MOTION = bool(script.get("motion", False))
     # 타이틀이 커지면 사진 밴드를 그만큼 내리고 줄인다 (자막 위치 CAP_TOP은 고정)
     global PHOTO_TOP, PHOTO_H
     _, tsize = title_font(title)
@@ -682,14 +743,22 @@ def main():
                 j0 = i - int(si * per)
                 if si > 0 and j0 < XFADE:
                     prev_fr = body_frame(paper, shots[si - 1], seg, pages, font, 1.0, fi, lt, title, ai, caption=False)
-                    fr = Image.blend(prev_fr, fr, (j0 + 1) / (XFADE + 1))
-            # 세그먼트 사이 크로스페이드도 자막 없는 화면끼리. 자막은 페이드가 끝난 화면 위에 얹는다
+                    fr = transition(prev_fr, fr, (j0 + 1) / (XFADE + 1))
+            # 세그먼트 사이 전환도 자막 없는 화면끼리. 자막은 전환이 끝난 화면 위에 얹는다
             if prev_last is not None and i < XFADE and kind in ("body", "reveal"):
-                fr = Image.blend(prev_last, fr, (i + 1) / (XFADE + 1))
+                fr = transition(prev_last, fr, (i + 1) / (XFADE + 1)) if kind == "body" \
+                    else Image.blend(prev_last, fr, (i + 1) / (XFADE + 1))
             if kind == "body":
                 if i == n - 1:
                     prev_last = fr.copy()             # 자막 없는 마지막 화면
-                fr = draw_caption_at(fr, pages, font, lt, bounds)
+                fr = draw_caption_at(fr, pages, font, lt, bounds, seg_dur=item["end"] - item["start"])
+                # 총성·폭발 컷 — 세그먼트 시작에서 화면이 흔들린다 (대본 "shake": true)
+                if MOTION and seg.get("shake"):
+                    sx, sy = MFX.shake(i / FPS - float(seg.get("shake_at", 0.3)))
+                    if sx or sy:
+                        sh = Image.new("RGB", (W, H), BLACK)
+                        sh.paste(fr, (sx, sy))
+                        fr = sh
             elif i == n - 1:
                 prev_last = fr
             enc.stdin.write(fr.tobytes())

@@ -31,6 +31,7 @@ LINES = {
     "common_v3_reason": "이 사람을 우리가 기억해야 하는 이유입니다",   # 건축사전 구조 ⑧ (2026-09-25)
     "common_v3_korea": "이런 사람이 있어서 지금의 대한민국이 있습니다",  # 마지막 문장 확정 (2026-09-25 사용자)
     "common_v3_call": "오늘 부를 이름",                                # 이름 앞 호명 문구 (2026-09-25 사용자)
+    "common_v3_known": "이 이름, 알고 계셨나요?",                       # 댓글 유도 질문형 마무리 (2026-09-25 사용자 — '이 사람'→'이 이름')
 }
 
 
@@ -99,13 +100,15 @@ def main():
         scored = []
         for i in range(1, a.takes + 1):
             raw = os.path.join(cand, f"{key}_take{i}.raw.wav")
-            synth_name(text, raw)                  # sad 1.4, 마침표로 끝낸다
+            synth_name(text, raw, punct="" if text.endswith("?") else ".")   # 질문형은 물음표 그대로
             clean = os.path.join(cand, f"{key}_take{i}.wav")
             trim_breath(raw, clean)
             s = end_drop(clean)
             scored.append((s, clean))
             print(f"  {key} take{i}: 끝음 비율 {s:.3f}")
         scored.sort()
+        if text.endswith("?"):                    # 질문형은 끝이 올라간 테이크가 맞다
+            scored.reverse()
         shutil.copy(scored[0][1], final)
         print(f"  → {key}: {os.path.basename(scored[0][1])} 채택 (비율 {scored[0][0]:.3f})\n")
 

@@ -1,0 +1,171 @@
+{
+  "series": "이름을 부르다",
+  "format": "v3-d",
+  "episode": "v3-05",
+  "display_title": "폭탄 두 개가 다 *불발* 나도\n끝까지 쏴버린 조선 *상남자*",
+  "subject": "나석주 (羅錫疇, 1892.2.4~1926.12.28)",
+  "award": "건국훈장 대통령장 (1962 추서)",
+  "sources": [
+    "국가보훈부 공훈전자사료관 이달의 독립운동가 「나석주」 https://e-gonghun.mpva.go.kr/user/IndepCrusaderDetail.do?goTocode=20003&mngNo=1537",
+    "한국민족문화대백과 「나석주」 https://encykorea.aks.ac.kr/Article/E0011382",
+    "한국민족문화대백과 「동양척식주식회사 투탄 의거」 https://encykorea.aks.ac.kr/Article/E0016672",
+    "한국민족문화대백과 「동양척식주식회사」 https://encykorea.aks.ac.kr/Article/E0016671",
+    "독립기념관 한국독립운동인명사전 「나석주」 https://search.i815.or.kr/dictionary/detail.do?id=370",
+    "우리역사넷 「나석주」·「동양척식주식회사」",
+    "경향신문 이기환 2024.8.20 (국립중앙박물관 소장 편지 7통 인용) https://www.khan.co.kr/article/202408200500001"
+  ],
+  "segments": [
+    {
+      "id": "01_hook",
+      "text": "여기 서울 한복판, / 일제의 심장에 폭탄을 던진 / *대단한 남자*가 있습니다.",
+      "image": "output/images/nsj_01_street.png",
+      "fx": "dust"
+    },
+    {
+      "id": "02_villain",
+      "text": "겉으로는 번듯한 회사, / 실상은 조선 땅을 빼앗는 / *합법적 도둑 소굴*. / 동양척식주식회사.",
+      "image": "assets/photos/dongchuk_keijo.jpg",
+      "fx": "dust",
+      "real_photo": true
+    },
+    {
+      "id": "03_villain2",
+      "text": "이 악질 회사는 / 조선 논밭을 *수만 정보*나 집어삼키고, / 소작료를 절반까지 뜯어 갔습니다.",
+      "image": "output/images/nsj_03_fields.png",
+      "fx": "dust"
+    },
+    {
+      "id": "04_who",
+      "text": "황해도, 소작인의 외아들도 / 이 회사에 *땅을 빼앗겼습니다*.",
+      "image": "output/images/nsj_04_home.png",
+      "fx": "snow"
+    },
+    {
+      "id": "05_letter",
+      "text": "그가 남긴 편지입니다. / 중국에서 굶어 죽느니, / 차라리 본국에 가서 / *몸값이나 하고 죽겠다*.",
+      "image": "output/images/nsj_05_letter.png",
+      "fx": "dust"
+    },
+    {
+      "id": "06_bank",
+      "text": "그해 겨울, / 중국인 가명을 쓴 그가 / 식산은행에 폭탄을 던집니다. / 그런데, *안 터졌습니다*.",
+      "image": "output/images/nsj_06_bank.png",
+      "fx": "dust"
+    },
+    {
+      "id": "07_in",
+      "text": "보통이면 도망칩니다. / 이 남자는 *미친 배짱*으로 / 곧장 동척 건물에 걸어 들어갑니다.",
+      "image": "output/images/nsj_07_stairs.png",
+      "fx": "dust"
+    },
+    {
+      "id": "08_office",
+      "text": "권총을 뽑아 들고, / 두 번째 폭탄을 던집니다. / *또 안 터졌습니다*.",
+      "image": "output/images/nsj_08_office.png",
+      "fx": "smoke",
+      "shake": true,
+      "shake_at": 0.35
+    },
+    {
+      "id": "09_street",
+      "text": "거리로 뛰쳐나와 / 일본 경찰을 쏘고, / 쫓아오는 경찰들 앞에서 / 권총을 *자기 가슴*에 겨눕니다.",
+      "image": "output/images/nsj_09_chase.png",
+      "fx": "snow",
+      "shake": true,
+      "shake_at": 0.35
+    },
+    {
+      "id": "10_cry",
+      "text": "쓰러지며 터져 나온 마지막 외침. / 2천만 민중아, / *분투하여 쉬지 말아라*.",
+      "image": "output/images/nsj_10_pole.png",
+      "fx": "snow"
+    },
+    {
+      "id": "11_ban",
+      "text": "겁에 질린 일제는 이 사건을 / *보름 넘게* / 신문에서 지워 버렸습니다.",
+      "image": "assets/photos/hwanggeumjeong_keijo.jpg",
+      "fx": "dust",
+      "real_photo": true
+    },
+    {
+      "id": "12_now",
+      "text": "지금 그 자리, / 을지로 은행 앞엔 / 그의 *동상*이 서 있습니다.",
+      "image": "output/images/nsj_02_building.png",
+      "fx": "dust"
+    },
+    {
+      "id": "13_reveal",
+      "kind": "reveal"
+    }
+  ],
+  "nameplate": [
+    "나석주",
+    "1892 – 1926",
+    "독립운동가 · 건국훈장 대통령장"
+  ],
+  "portrait": "assets/photos/na_seokju_portrait.jpg",
+  "name": "나석주",
+  "name_audio": "output/audio/endings/v3_name_나석주.wav",
+  "reveal_call_text": "폭탄이 다 불발 나도 끝까지 방아쇠를 당긴 조선의 상남자,",
+  "reveal_call_audio": "output/audio/v3_05_nsj/reveal_call.wav",
+  "reveal_audio": "common_v3_known.wav",
+  "credit": [
+    "자료 · 공훈전자사료관, 한국민족문화대백과, 독립운동인명사전",
+    "사진 · 위키미디어 커먼즈 (퍼블릭 도메인)"
+  ],
+  "color": true,
+  "motion": true,
+  "playback_speed": 1.375,
+  "gap_max": 0.18,
+  "tail_keep": 0.08,
+  "bgm": "anthem",
+  "bgm_gain": 0.176,
+  "upload": {
+    "tags": [
+      "독립운동가",
+      "한국사",
+      "근현대사",
+      "나석주",
+      "동양척식주식회사",
+      "의열단",
+      "을지로",
+      "shorts"
+    ],
+    "playlists": [
+      "전부 부른 이름"
+    ],
+    "hashtags_extra": [
+      "의열단"
+    ],
+    "lede": "1926년 겨울 을지로, 폭탄이 두 번 다 불발 나고도 멈추지 않은 남자의 기록."
+  },
+  "cover": {
+    "line": "폭탄 두 개가 다 불발 나도 끝까지 쏴버린 조선 상남자",
+    "number": 5
+  },
+  "verified": {
+    "_검증일": "2026-09-25 문장 단위 대조. 숫자는 사용자 지시로 뺐다(수만·보름 넘게). 레퍼런스 = 사람이만든역사 U0qa00cQiDE(흥선대원군) 말투",
+    "02_villain": "백과 동척: '1908년 일본이 한국에 설립한 국책회사'. '합법적 도둑 소굴'은 레퍼런스 말투의 평가어. 1923년 동아일보가 동척을 '조선잠식회사'로 부름(우리역사넷). 사진 File:Oriental Development Company.JPG — PD",
+    "03_villain2": "백과: 1921년 농경지 7만 3073정보(정점) → '수만 정보'. 우리역사넷: '소작료 비율은 종래의 25% 정도에서 50%까지 인상' → '절반까지'",
+    "04_who": "우리역사넷: '소작인 나병헌의 독자'. 공훈: '외아들'. 인명사전: '자신이 직접 이들 기관으로부터 농지를 빼앗긴 경험도 있었다'. ⚠️ '가난한'은 사료에 없어 뺐다",
+    "05_letter": "국립중앙박물관 소장 편지(2024 공개, 경향 인용): '중국에서 굶어 죽거나 얼어 죽느니 차라리 본국에 가서 몸값이나 하고 죽으려 합니다.' 간접 인용으로 줄였다. ⚠️ 수신자가 김구인지 확정 못 해 '그가 남긴 편지'로 썼다",
+    "06_bank": "백과: '오후 2시 5분경 조선식산은행에 들어가 대부계를 향해 폭탄을 던졌으나 터지지 않았다'. 가명: 인명사전 '마중더(馬中德)… 선원증명서'",
+    "07_in": "백과: '오후 2시 15분경 (동척) 정문에 들어서면서'. '미친 배짱'은 레퍼런스 말투의 평가어",
+    "08_office": "백과: '개량부 사무실로 들어가 권총을 난사하며 폭탄을 투척하였으나 폭발하지 않았다'",
+    "09_street": "백과: '황금정 길가에서 만난 경찰복을 입은 경기도경찰부 경무과 경부보를 쏘고'. 인명사전: '일제 경찰 4~5명이 쫓아왔다… 권총으로 자신의 가슴에 세 방을 쏘았다'. ⚠️ 피격 7명 중 민간인(기자·수위·점원)이 있어 대본은 경찰만 말한다",
+    "10_cry": "백과·인명사전: '우리 2천만 민중아, 나는 조국의 자유를 위하여 투쟁하였다. 2천만 민중아, 분투하여 쉬지 말아라.' 1차 근거는 동아일보 기자 메모(경향). 숫자가 들어가지만 원문이라 유지",
+    "11_ban": "인명사전: '두 주일이 지나 보도통제가 해제'. 경향: '사건 발생 16일이 지난 1927년 1월13일자부터 보도통제를 풀었다' → '보름 넘게'",
+    "12_now": "보훈부 현충시설: 나석주의사 동상 1999.11.17, 을지로 66(옛 동척 자리). 사진 대신 AI 건물 이미지",
+    "reveal": "'조선의 상남자'는 레퍼런스 말투의 평가어. '이 이름, 알고 계셨나요?' — 사용자 지시(댓글 유도)",
+    "초상": "File:나석주.jpg — 180×300, PD-old. 커먼즈 API 확인. 해상도가 낮다",
+    "쓰지_않은_것": [
+      "사상자 수(7명 저격·3명 사망) — 민간인 피격이 드러나 '테러' 논쟁 위험, 숫자 금지 지시",
+      "김창숙 권총·자금 — 회고록 층위",
+      "폭탄이 터졌으면 건물 3분의 2가 날아갔다 — 당시 검찰 실험(신문 보도), 분량",
+      "경찰 연인원 1만 명 — 1920년 국내 활동 때 이야기",
+      "'매일 수만 명이 지나친다' — 근거 없음"
+    ]
+  },
+  "audio_dir": "output/audio/v3_05_nsj",
+  "output": "output/최종본/v3_05_nsj.mp4"
+}

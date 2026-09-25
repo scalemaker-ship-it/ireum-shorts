@@ -1,0 +1,170 @@
+{
+  "series": "이름을 부르다",
+  "format": "v3-d",
+  "episode": "v3-06",
+  "display_title": "*사전* 한 권 때문에\n*감옥*에서 죽은 학자",
+  "subject": "이윤재 (李允宰, 1888.12.24~1943.12.8, 호 환산)",
+  "award": "건국훈장 독립장 (1962 추서)",
+  "sources": [
+    "국가보훈부 공훈전자사료관 이달의 독립운동가 「이윤재」 https://e-gonghun.mpva.go.kr/user/IndepCrusaderDetail.do?goTocode=20003&mngNo=11314",
+    "한국민족문화대백과 「이윤재」 https://encykorea.aks.ac.kr/Article/E0045469 · 「조선어학회사건」 https://encykorea.aks.ac.kr/Article/E0052129",
+    "독립기념관 독립운동인명사전 「이윤재」 https://search.i815.or.kr/dictionary/detail/print.do?id=10674",
+    "국립한글박물관 소식지 2018.11 https://www.hangeul.go.kr/webzine/201811/sub1_2.html",
+    "우리역사넷 (조선말 큰사전 원고 발견) http://contents.history.go.kr/id/hm_163_0040",
+    "국가유산포털 보물 제2086호 「조선말 큰사전 원고」"
+  ],
+  "segments": [
+    {
+      "id": "01_hook",
+      "text": "여기 사전 한 권 때문에 / 감옥에서 죽은 / *대단한 학자*가 있습니다.",
+      "image": "output/images/lyj_01_cell.png",
+      "fx": "dust"
+    },
+    {
+      "id": "02_era",
+      "text": "일본이 우리말을 / *못 쓰게* 하던 시절, / 그는 우리말 사전을 만들고 있었습니다.",
+      "image": "output/images/lyj_02_desk.png",
+      "fx": "dust"
+    },
+    {
+      "id": "03_cards",
+      "text": "전국의 우리말을 모아 적은 카드만 / *수십만 장*. / 원고는 해마다 쌓여 갔습니다.",
+      "image": "output/images/lyj_03_cards.png",
+      "fx": "dust"
+    },
+    {
+      "id": "04_twice",
+      "text": "이미 *두 번*이나 / 감옥에 다녀온 사람이었지만, / 그는 멈추지 않았습니다.",
+      "image": "output/images/lyj_04_gate.png",
+      "fx": "snow"
+    },
+    {
+      "id": "05_diary",
+      "text": "그런데 함흥의 한 여학생 / *일기장 한 줄*이 / 트집을 잡힙니다.",
+      "image": "output/images/lyj_05_diary.png",
+      "fx": "dust"
+    },
+    {
+      "id": "06_arrest",
+      "text": "그 한 줄에서 시작된 수사로 / 사전을 만들던 학자 / *서른 명 넘게* 끌려갑니다.",
+      "image": "output/images/lyj_06_arrest.png",
+      "fx": "snow"
+    },
+    {
+      "id": "07_seized",
+      "text": "사전 원고는 / *증거물*로 빼앗겼습니다.",
+      "image": "output/images/lyj_07_seized.png",
+      "fx": "dust"
+    },
+    {
+      "id": "08_torture",
+      "text": "그는 날마다 매를 맞았고, / *물고문*을 여러 번 당했습니다.",
+      "image": "output/images/lyj_08_room.png",
+      "fx": "none",
+      "shake": true,
+      "shake_at": 0.5
+    },
+    {
+      "id": "09_death",
+      "text": "그리고 이듬해 겨울, / 함흥 감옥 차가운 *독방*에서 / 숨을 거둡니다.",
+      "image": "output/images/lyj_09_dawn.png",
+      "fx": "snow"
+    },
+    {
+      "id": "10_question",
+      "text": "그렇다면 빼앗긴 사전은 / *어디로* 갔을까요?",
+      "image": "output/images/lyj_03_cards.png",
+      "fx": "dust"
+    },
+    {
+      "id": "11_found",
+      "text": "해방되고 한 달도 안 돼, / 서울역 창고 한구석에서 / *원고 뭉치*가 발견됩니다.",
+      "image": "output/images/lyj_10_station.png",
+      "fx": "dust"
+    },
+    {
+      "id": "12_done",
+      "text": "그 원고로 우리말 큰사전이 / *마침내* 완성됐고, / 원고는 지금 보물이 됐습니다.",
+      "image": "output/images/lyj_02_desk.png",
+      "fx": "dust"
+    },
+    {
+      "id": "13_reveal",
+      "kind": "reveal"
+    }
+  ],
+  "nameplate": [
+    "이윤재",
+    "1888 – 1943",
+    "한글학자 · 건국훈장 독립장"
+  ],
+  "portrait": "output/images/lyj_02_desk.png",
+  "name": "이윤재",
+  "name_audio": "output/audio/endings/v3_name_이윤재.wav",
+  "reveal_call_text": "우리말을 지키다 감옥에서 죽은 학자,",
+  "reveal_call_audio": "output/audio/v3_06_lyj/reveal_call.wav",
+  "reveal_audio": "common_v3_known.wav",
+  "credit": [
+    "초상 사진은 저작권이 확인되지 않아 그림으로 둡니다",
+    "자료 · 공훈전자사료관, 한국민족문화대백과, 독립운동인명사전"
+  ],
+  "illustration": true,
+  "color": true,
+  "motion": true,
+  "playback_speed": 1.375,
+  "gap_max": 0.18,
+  "tail_keep": 0.08,
+  "bgm": "anthem",
+  "bgm_gain": 0.176,
+  "upload": {
+    "tags": [
+      "독립운동가",
+      "한국사",
+      "근현대사",
+      "이윤재",
+      "조선어학회",
+      "한글",
+      "큰사전",
+      "말모이",
+      "shorts"
+    ],
+    "playlists": [
+      "전부 부른 이름"
+    ],
+    "hashtags_extra": [
+      "한글"
+    ],
+    "lede": "우리말 사전 원고를 지키다 함흥 감옥에서 숨진 한글학자의 기록."
+  },
+  "cover": {
+    "line": "사전 한 권 때문에 감옥에서 죽은 학자",
+    "number": 6
+  },
+  "verified": {
+    "_검증일": "2026-09-25 문장 단위 대조. 숫자는 사용자 지시로 어림 표현(수십만·서른 명 넘게·한 달도 안 돼)",
+    "_이미지": "사용자 지시 — 모든 장면에 주인공 등장, 정면 얼굴 금지, 그림체. 인상착의는 공훈 초상 참고(둥근 검은 테 안경, 짧은 머리 옆으로 넘김, 수염 없음, 한복 흰 동정). 공훈 초상 자체는 All Rights Reserved라 쓰지 않았다",
+    "01_hook": "공훈: '1943년 12월 8일 새벽, 함흥감옥의 차가운 시멘트 독방에서… 옥사'. 사전(조선어학회 사전 편찬)으로 체포된 조선어학회 사건이 원인",
+    "02_era": "공훈: 사전 편찬 전임위원(정인승·이중화·한징 등과). 1930년대 말 일제의 조선어 말살 정책 — '못 쓰게 하던' 은 학교 조선어 폐지·국어(일본어) 상용 강요를 쉬운 말로",
+    "03_cards": "공훈: '사전 편찬 원고와 수십만 장의 자료 카드를 압수' → '카드 수십만 장'",
+    "04_twice": "한글박물관: '세 차례의 옥고'(3·1운동, 수양동우회, 조선어학회) → 사건 전까지 두 번. 공훈·인명사전: 1919 3·1운동 징역 1년 6월, 1937 수양동우회 1년 6개월",
+    "05_diary": "공훈: 박영옥이 '2학년 때 쓴 일기 중에서 국어를 사용하는 자를 처벌했다는 문구를 찾아내 이를 트집잡기 시작하였다'",
+    "06_arrest": "민족대백과: '1943년 4월 1일까지 모두 33명이 검거' → '서른 명 넘게'(국가기록원 29명·큰사전 머리말 약 30명과 충돌하므로 어림)",
+    "07_seized": "공훈: '사전 편찬 원고… 압수'",
+    "08_torture": "인명사전·한글박물관: '하루도 빠짐없이 매질을 당한 것도 모자라 6번의 물고문' → '여러 번'. ⚠️ '비행기 태우기'는 확인 못 해 쓰지 않았다",
+    "09_death": "체포 1942.10(민족대백과) → 옥사 1943.12.8 = 이듬해 겨울. 공훈 '함흥감옥의 차가운 시멘트 독방'",
+    "10_question": "채널 문장(③ 결론으로 넘어가는 질문)",
+    "11_found": "우리역사넷: '1945년 9월 8일 경성역 조선통운 창고에서 발견' → 해방(8.15)에서 한 달이 안 됨",
+    "12_done": "한글학회: 『조선말 큰사전』 1권 1947, 1957년 6권 완간(『큰사전』). 국가유산포털: 보물 제2086호(2020) 「조선말 큰사전 원고」",
+    "reveal": "'우리말을 지키다 감옥에서 죽은 학자' — 01·09 요약. '이 이름, 알고 계셨나요?' — 사용자 지시",
+    "초상": "PD 확인된 단독 사진 없음(커먼즈 조회). 공훈 초상은 All Rights Reserved, 커먼즈 CC0 파일은 이용자 합성물이라 쓰지 않음 → 그림(뒷모습)으로 대체하고 크레딧 첫 줄에 사유 표기",
+    "쓰지_않은_것": [
+      "'말은 겨레의 얼' — 이윤재 발언으로 확인 못 함",
+      "원고지 2만6천여 장 — 언론 수치, 국가유산청 수량과 단위가 다름",
+      "서울역장이 발견 — 언론 층위",
+      "비행기 태우기 고문 — 확인 못 함",
+      "3·1운동 옥고 3년(민족대백과) — 공훈·인명사전 1년 6월과 충돌"
+    ]
+  },
+  "audio_dir": "output/audio/v3_06_lyj",
+  "output": "output/최종본/v3_06_lyj.mp4"
+}
