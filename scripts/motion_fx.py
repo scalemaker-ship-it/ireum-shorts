@@ -170,3 +170,83 @@ def pop(layer, k):
     alpha = out.getchannel("A").point(lambda v: int(v * min(1.0, k * 2.5)))
     out.putalpha(alpha)
     return out, int(24 * (1 - e))
+
+
+# ───────── 모션그래픽 (2026-09-26 사용자 — "모션그래픽처럼") ─────────
+# 전부 전체 프레임(1080×1920) 위에 얹는다. band = 사진 밴드 (x0, y0, x1, y1).
+
+def _rgba_text(text, font, fill, pad=0):
+    d = ImageDraw.Draw(Image.new("RGBA", (8, 8)))
+    l, t, r, b = d.textbbox((0, 0), text, font=font)
+    im = Image.new("RGBA", (r - l + pad * 2, b - t + pad * 2), (0, 0, 0, 0))
+    ImageDraw.Draw(im).text((pad - l, pad - t), text, font=font, fill=fill)
+    return im
+
+
+def tag(fr, text, since, band, font, ivory=(237, 230, 214), red=(196, 42, 42)):
+    """장소 태그 — 사진 왼쪽 아래로 미끄러져 들어와 머문다."""
+    if since < 0:
+        return fr
+    k = ease_out(since / 0.35)
+    txt = _rgba_text(text, font, ivory)
+    pw, ph = txt.width + 44, txt.height + 26
+    box = Image.new("RGBA", (pw, ph), (10, 9, 8, 190))
+    ImageDraw.Draw(box).rectangle([0, 0, 7, ph], fill=red + (255,))
+    box.alpha_composite(txt, (26, 13))
+    x = int(60 - (pw + 60) * (1 - k))
+    y = band[3] - ph - 150
+    out = fr.convert("RGBA")
+    box.putalpha(box.getchannel("A").point(lambda v: int(v * min(1.0, k * 1.5))))
+    out.alpha_composite(box, (max(-pw, x), y))
+    return out.convert("RGB")
+
+
+def callout(fr, text, since, dur, band, font, ivory=(237, 230, 214), red=(196, 42, 42)):
+    """키워드 콜아웃 — 크게 떴다가(1.25→1.0) 빨간 밑줄이 그어지고, dur 끝에서 사라진다."""
+    if since < 0 or since > dur:
+        return fr
+    k_in = ease_out(since / 0.28)
+    k_out = 1 - ease(max(0.0, (since - (dur - 0.3)) / 0.3))
+    a = k_in * k_out
+    txt = _rgba_text(text, font, ivory, pad=10)
+    s = 1.25 - 0.25 * k_in
+    txt = txt.resize((max(1, int(txt.width * s)), max(1, int(txt.height * s))), Image.BILINEAR)
+    cx, cy = (band[0] + band[2]) // 2, (band[1] + band[3]) // 2
+    # 뒤에 어두운 띠를 깔아 사진 위에서도 읽히게
+    plate = Image.new("RGBA", (fr.width, txt.height + 70), (8, 7, 6, int(150 * a)))
+    out = fr.convert("RGBA")
+    out.alpha_composite(plate, (0, cy - plate.height // 2))
+    txt.putalpha(txt.getchannel("A").point(lambda v: int(v * a)))
+    out.alpha_composite(txt, (cx - txt.width // 2, cy - txt.height // 2 - 8))
+    k_line = ease(max(0.0, (since - 0.2) / 0.35))
+    if k_line > 0:
+        lw = int(txt.width * 0.9 * k_line)
+        ly = cy + txt.height // 2 + 4
+        ImageDraw.Draw(out).rectangle([cx - int(txt.width * 0.45), ly, cx - int(txt.width * 0.45) + lw, ly + 8],
+                                      fill=red + (int(255 * a),))
+    return out.convert("RGB")
+
+
+def stamp(fr, text, since, band, font, red=(196, 42, 42)):
+    """도장 — 크게(2.0) 기울어진 채 내려와 쾅 찍히고 그대로 남는다. 찍히는 순간 살짝 흔들린다."""
+    if since < 0:
+        return fr, (0, 0)
+    k = ease_out(min(1.0, since / 0.16), p=2)
+    txt = _rgba_text(text, font, red + (255,), pad=18)
+    w, h = txt.width + 20, txt.height + 20
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle([4, 4, w - 5, h - 5], radius=14, outline=red + (255,), width=8)
+    im.alpha_composite(txt, (10, 10))
+    # 도장 잉크 결 — 군데군데 빠진 느낌
+    grain = Image.effect_noise((w, h), 40).point(lambda v: 255 if v > 55 else 170)   # 잉크가 조금만 빠지게
+    im.putalpha(Image.composite(im.getchannel("A"), Image.new("L", (w, h), 0), grain))
+    s = 2.0 - 1.0 * k
+    im = im.resize((max(1, int(w * s)), max(1, int(h * s))), Image.BILINEAR).rotate(-9, expand=True, resample=Image.BICUBIC)
+    im.putalpha(im.getchannel("A").point(lambda v: int(v * min(1.0, k * 1.4))))
+    x = (band[0] + band[2]) // 2 - im.width // 2 + 120       # 가운데보다 살짝 오른쪽
+    y = (band[1] + band[3]) // 2 - im.height // 2 - 40
+    out = fr.convert("RGBA")
+    out.alpha_composite(im, (x, y))
+    jolt = shake(since - 0.16, amp=10, decay=12) if since > 0.16 else (0, 0)
+    return out.convert("RGB"), jolt

@@ -6,6 +6,9 @@ OpenAI Images API를 직접 쓰면 과금되지만, `codex exec`는 ChatGPT 구�
 다음 날 다시 돌리면 이어서 채운다.
 
 사용: python3 scripts/gen_images.py [회차접두어 ...]      예) gen_images.py kim nam
+
+MFLUX_PREFIXES 접두어는 codex 대신 **로컬 mflux(Z-Image-Turbo 4bit)**로 뽑는다 — 쿼터 없음, 1장 약 2분 40초
+(M4 16GB, --low-ram, 1024×768, 9 steps). 모델은 ~/.venvs/mflux/zimage-turbo-q4 (mflux-save로 미리 양자화).
 """
 import os
 import subprocess
@@ -294,6 +297,18 @@ SCENES = {
  "lyj_08_room":    "A bare 1940s interrogation room: a wooden chair, a metal bucket of water, a single hanging bulb; the scholar's shadow cast large on the wall, his figure turned away. Somber, no gore.",
  "lyj_09_dawn":    "A solitary prison cell at a freezing winter dawn; the scholar's silhouette slumped against the wall, turned away from the viewer, breath mist in the air, his round glasses lying on the floor.",
  "lyj_10_station": "A dim 1945 Seoul railway station warehouse; a station worker seen from behind opens a wooden crate full of yellowed Korean manuscript bundles, dust glittering in the light from a half-open door.",
+ # v3-07 문형순 — 1950 성산포 예비검속 총살 명령 거부 (mflux 로컬 생성)
+ "mhs_01_order":   "Close view of a single 1950 Korean official government document on a worn wooden desk, typed vertical Korean lines and a round red ink seal, a fountain pen beside it, desk lamp light. Text illegible. No people.",
+ "mhs_02_jeju":    "A 1950 Jeju island coastal village in summer: black basalt stone walls, low thatched-roof houses, the Seongsan Ilchulbong crater rising in the distance, overcast sky. No people.",
+ "mhs_03_station": "A small 1950 rural Korean police station building: low wooden structure with a tiled roof, a bare flagpole, a dirt yard enclosed by a basalt stone wall. No people.",
+ "mhs_04_room":    "An empty 1950 warehouse holding room with straw mats on an earthen floor, a barred wooden door, thin light through gaps in the plank wall. No people.",
+ "mhs_05_pen":     "Extreme close-up of a man's hand in a dark uniform sleeve holding a fountain pen, writing a short handwritten line at the top of a typed official document. Writing illegible. Only the hand visible.",
+ "mhs_06_rice":    "A 1950s Korean rice ration depot: stacked straw rice sacks, a wooden measuring box and scale, dusty light from a doorway. No people.",
+ "mhs_07_ward":    "An empty 1960s provincial hospital ward: a single iron bed with white sheets by a window, a folded blanket, bare walls, quiet afternoon light. No people.",
+ "mhs_08_cap":     "A 1950s Korean police officer's peaked cap resting on a folded official document on a wooden table, dim window light. Close view. No people.",
+ "mhs_09_road":    "A dirt country road through Jeju fields at dawn, a small group of villagers walking away toward a village, seen only from far behind as tiny silhouettes, mist over the fields.",
+ "mhs_10_village": "Moseulpo, Jeju, around 1949: a coastal village of low stone-walled houses by a harbor with small wooden fishing boats, wide view. No people.",
+ "mhs_11_cemetery":"Rows of simple white granite gravestones in a Korean national cemetery on a hillside, a few white chrysanthemums, morning mist. No people.",
 }
 
 
@@ -304,7 +319,24 @@ def _style_for(key, scene):
     return f"Image: {scene} {STYLE_COLOR if key.startswith(COLOR_PREFIXES) else STYLE}"
 
 
+MFLUX_PREFIXES = ("mhs_",)
+MFLUX_BIN = os.path.expanduser("~/.venvs/mflux/bin/mflux-generate-z-image-turbo")
+MFLUX_MODEL = os.path.expanduser("~/.venvs/mflux/zimage-turbo-q4")
+
+
+def generate_mflux(key, scene, seed=7):
+    path = os.path.join(OUT, key + ".png")
+    r = subprocess.run([MFLUX_BIN, "--model", MFLUX_MODEL, "--base-model", "z-image-turbo", "--low-ram",
+                        "--prompt", _style_for(key, scene), "--width", "1024", "--height", "768",
+                        "--steps", "9", "--seed", str(seed), "--output", path],
+                       cwd=BASE, capture_output=True, text=True)
+    ok = os.path.exists(path) and os.path.getsize(path) > 50_000
+    return ok, (r.stdout or "")[-400:] + (r.stderr or "")[-400:]
+
+
 def generate(key, scene):
+    if key.startswith(MFLUX_PREFIXES):
+        return generate_mflux(key, scene)
     path = os.path.join(OUT, key + ".png")
     prompt = (f"Generate one image and save it to the absolute path {path}\n\n"
               + _style_for(key, scene))

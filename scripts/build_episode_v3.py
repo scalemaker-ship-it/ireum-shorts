@@ -486,7 +486,7 @@ def _caption_popped(fr, line, font, since):
 
 
 def draw_caption_at(fr, pages, font, lt, bounds=None, seg_dur=None):
-    if MOTION and seg_dur:
+    if False and MOTION and seg_dur:          # 자막 팝업 — 2026-09-26 사용자 지시로 끔
         counts = [sum(len(l[0]) for l in p) for p in pages]
         tot, acc, pi = sum(counts), 0, 0
         for k, c in enumerate(counts):
@@ -521,9 +521,27 @@ def draw_caption_at(fr, pages, font, lt, bounds=None, seg_dur=None):
     return with_alpha(fr, lambda im: draw_lines(im, pages[pi], font, CAP_TOP), a)
 
 
+def motion_graphics(fr, seg, since, dur):
+    """대본 필드로 켠다 — "tag": "함흥 감옥", "callout": "수십만 장", "stamp": "압수"."""
+    band = (0, PHOTO_TOP, W, PHOTO_TOP + PHOTO_H)
+    if seg.get("tag"):
+        fr = MFX.tag(fr, seg["tag"], since - 0.15, band, load(HANNA, 46))
+    if seg.get("callout"):
+        at = float(seg.get("callout_at", 0.2)) * dur
+        fr = MFX.callout(fr, seg["callout"], since - at, min(1.8, dur - at), band, load(EULJIRO, 104))
+    if seg.get("stamp"):
+        at = float(seg.get("stamp_at", 0.35)) * dur
+        fr, (jx, jy) = MFX.stamp(fr, seg["stamp"], since - at, band, load(EULJIRO, 150))
+        if jx or jy:
+            sh = Image.new("RGB", (W, H), BLACK)
+            sh.paste(fr, (jx, jy))
+            fr = sh
+    return fr
+
+
 def transition(prev, cur, k):
     """컷 전환. 모션 모드면 사진 밴드만 줌 푸시로, 아니면 크로스페이드."""
-    if not MOTION:
+    if True:                                  # 줌 푸시(잔상 선) — 2026-09-26 사용자 지시로 끔. 크로스페이드
         return Image.blend(prev, cur, k)
     box = (0, PHOTO_TOP, W, PHOTO_TOP + PHOTO_H)
     out = cur.copy()
@@ -752,6 +770,8 @@ def main():
                 if i == n - 1:
                     prev_last = fr.copy()             # 자막 없는 마지막 화면
                 fr = draw_caption_at(fr, pages, font, lt, bounds, seg_dur=item["end"] - item["start"])
+                if MOTION:
+                    fr = motion_graphics(fr, seg, i / FPS, n / FPS)
                 # 총성·폭발 컷 — 세그먼트 시작에서 화면이 흔들린다 (대본 "shake": true)
                 if MOTION and seg.get("shake"):
                     sx, sy = MFX.shake(i / FPS - float(seg.get("shake_at", 0.3)))
