@@ -137,5 +137,6 @@
   "reveal_audio": "common_v3_korea.wav",
   "bgm": "anthem",
   "bgm_gain": 0.176,
-  "name_audio": "output/audio/endings/v3_name_문형순.wav"
+  "name_audio": "output/audio/endings/v3_name_문형순.wav",
+  "ai_label": false
 }

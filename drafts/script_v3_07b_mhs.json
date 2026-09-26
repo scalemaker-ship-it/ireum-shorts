@@ -139,5 +139,6 @@
   "bgm": "anthem",
   "bgm_gain": 0.176,
   "name_audio": "output/audio/endings/v3_name_문형순.wav",
-  "color": true
+  "color": true,
+  "ai_label": false
 }

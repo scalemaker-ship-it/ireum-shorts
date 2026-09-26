@@ -735,7 +735,8 @@ def main():
             shots = [Shot(os.path.join(BASE, im), abs(hash(seg["id"] + im)) % 997, pace if si == 0 else "normal")
                      for si, im in enumerate(imgs)]
             pages, font = caption_pages(seg["text"])
-            ai = not seg["image"].startswith("assets/photos") and not seg.get("real_photo")
+            ai = not seg["image"].startswith("assets/photos") and not seg.get("real_photo") \
+                and script.get("ai_label", True)      # 대본 "ai_label": false면 표기 생략 (2026-09-26 사용자, 문형순 편)
             # 줄 음성 경계 → 자막 넘김 시점. 줄 수가 자막 장 수와 같을 때만 쓴다
             seg_len = item["end"] - item["start"]
             lk = [k for k in item["sub"] if k.startswith("L")]
