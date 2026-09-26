@@ -82,6 +82,7 @@
 # 1. 사료 확인 → 대본 JSON (verified에 문장별 근거). 초상은 커먼즈 API로 조회
 cp drafts/script_v3_02_kim.json drafts/script_v3_NN_xxx.json   # 고친다
 # 2. 배경 이미지 (gen_images.py SCENES에 접두어 추가, 10장 안팎, 약 8분)
+#    MFLUX_PREFIXES에 접두어를 넣으면 codex 대신 로컬 mflux(Z-Image-Turbo 4bit)로 뽑는다 — 쿼터 없음, 1장 약 2분 40초 (v3-07 문형순부터)
 python3 scripts/gen_images.py xxx_
 # 3. 나레이션 (문장 통째)
 python3 scripts/generate_tts.py drafts/script_v3_NN_xxx.json output/audio/v3_NN_xxx

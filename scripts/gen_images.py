@@ -9,6 +9,7 @@ OpenAI Images API를 직접 쓰면 과금되지만, `codex exec`는 ChatGPT 구�
 
 MFLUX_PREFIXES 접두어는 codex 대신 **로컬 mflux(Z-Image-Turbo 4bit)**로 뽑는다 — 쿼터 없음, 1장 약 2분 40초
 (M4 16GB, --low-ram, 1024×768, 9 steps). 모델은 ~/.venvs/mflux/zimage-turbo-q4 (mflux-save로 미리 양자화).
+⚠️ mflux는 같은 이름 파일이 있으면 덮어쓰지 않고 `_1`을 붙여 저장한다 — 다시 뽑을 땐 기존 파일을 먼저 치운다.
 """
 import os
 import subprocess
@@ -297,6 +298,18 @@ SCENES = {
  "lyj_08_room":    "A bare 1940s interrogation room: a wooden chair, a metal bucket of water, a single hanging bulb; the scholar's shadow cast large on the wall, his figure turned away. Somber, no gore.",
  "lyj_09_dawn":    "A solitary prison cell at a freezing winter dawn; the scholar's silhouette slumped against the wall, turned away from the viewer, breath mist in the air, his round glasses lying on the floor.",
  "lyj_10_station": "A dim 1945 Seoul railway station warehouse; a station worker seen from behind opens a wooden crate full of yellowed Korean manuscript bundles, dust glittering in the light from a half-open door.",
+ # v3-07b 문형순 컬러판 — 주인공 뒷모습 (mflux)
+ "mhsc_01_desk":    "At night in a 1950 police chief's office, the police chief sits at a wooden desk seen from directly behind, reading a single typed official document under a green desk lamp. Over-the-shoulder view, the document text illegible.",
+ "mhsc_02_jeju":    "Summer 1950 on Jeju island: the police chief stands on a path between black basalt stone walls, seen from behind, looking toward the Seongsan Ilchulbong crater across a village of low thatched roofs, overcast sky.",
+ "mhsc_03_station": "The police chief walks toward the entrance of a small 1950 rural police station with a tiled roof and a basalt stone wall, seen from behind in the dirt yard, late afternoon light.",
+ "mhsc_04_room":    "The police chief stands in the open barred wooden door of a dim 1950 warehouse holding room, seen from behind; inside, many detained villagers in plain clothes sit on straw mats, blurred and out of focus.",
+ "mhsc_05_pen":     "Extreme close-up of the police chief's hand in a dark navy uniform sleeve holding a fountain pen, writing a short handwritten line at the top of a typed official document. Writing illegible. Only the hand visible.",
+ "mhsc_06_rice":    "A mid-1950s Korean rice ration depot. A single slim middle-aged man with short greying hair, bareheaded (no hat, no cap), wearing a plain worn grey civilian work jacket, seen completely from behind as he lifts a straw rice sack onto a stack. He is alone: no police, no uniforms, no other people. Dusty light from the doorway.",
+ "mhsc_07_ward":    "A 1966 provincial Korean hospital ward, quiet afternoon. A single old man with thin grey hair lies alone in an iron bed by the window, his body turned away from the viewer toward the window so only the back of his head and shoulders are visible. The rest of the room is empty: no nurses, no visitors, no police, no other people. An empty wooden chair beside the bed.",
+ "mhsc_08_cap":     "A 1950s Korean police officer's peaked cap and a pair of round wire-rimmed glasses resting on a folded official document on a wooden table, soft window light. Close view. No people.",
+ "mhsc_09_road":    "Dawn on a dirt country road through Jeju fields: in the foreground the police chief stands seen from behind, watching a small group of villagers walk away toward their village in the mist.",
+ "mhsc_10_village": "Moseulpo harbor, Jeju, around 1949: the police chief stands on the stone pier seen from behind, looking at a coastal village of low stone-walled houses and small wooden fishing boats, villagers tiny in the distance.",
+ "mhsc_11_cemetery":"Rows of simple white granite gravestones in a Korean national cemetery on a green hillside, white chrysanthemums, soft morning mist. No people.",
  # v3-07 문형순 — 1950 성산포 예비검속 총살 명령 거부 (mflux 로컬 생성)
  "mhs_01_order":   "Close view of a single 1950 Korean official government document on a worn wooden desk, typed vertical Korean lines and a round red ink seal, a fountain pen beside it, desk lamp light. Text illegible. No people.",
  "mhs_02_jeju":    "A 1950 Jeju island coastal village in summer: black basalt stone walls, low thatched-roof houses, the Seongsan Ilchulbong crater rising in the distance, overcast sky. No people.",
@@ -312,14 +325,29 @@ SCENES = {
 }
 
 
+# v3-07b 문형순 컬러판 (2026-09-26 사용자 지시 — "인물 뒷모습 나오는 이미지, 컬러로"). 그림체가 아니라 실사 컬러.
+STYLE_COLOR_CHAR = ("The main character appears in the scene but NEVER with a visible face — show him from behind, "
+                    "turned away, in shadow, or only his hands. Other people only as distant or blurred figures.")
+PHOTO_CHAR = {
+    "mhsc_": ("a Korean police chief in his early fifties (1950), slim build, short dark hair greying at the temples, "
+              "round wire-rimmed glasses, wearing a dark navy Korean National Police uniform and peaked cap. Always the same man."),
+}
+
+
 def _style_for(key, scene):
+    for pre, who in PHOTO_CHAR.items():
+        # 인물 없는 컷, 경찰을 그만둔 뒤의 컷(제복 설명을 붙이면 경찰이 끼어든다 — 2026-09-26)은 컬러 스타일만
+        if key.startswith(pre) and ("No people" in scene or "no police" in scene):
+            return f"Image: {scene} {STYLE_COLOR}"
+        if key.startswith(pre):
+            return f"Image: {scene} Main character: {who} {STYLE_COLOR_CHAR} {STYLE_COLOR}"
     for pre, who in ILLUST.items():
         if key.startswith(pre):
             return f"Image: {scene} Main character: {who} {STYLE_ILLUST}"
     return f"Image: {scene} {STYLE_COLOR if key.startswith(COLOR_PREFIXES) else STYLE}"
 
 
-MFLUX_PREFIXES = ("mhs_",)
+MFLUX_PREFIXES = ("mhs_", "mhsc_")
 MFLUX_BIN = os.path.expanduser("~/.venvs/mflux/bin/mflux-generate-z-image-turbo")
 MFLUX_MODEL = os.path.expanduser("~/.venvs/mflux/zimage-turbo-q4")
 
