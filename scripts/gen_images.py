@@ -8,6 +8,7 @@ OpenAI Images API를 직접 쓰면 과금되지만, `codex exec`는 ChatGPT 구�
 사용: python3 scripts/gen_images.py [회차접두어 ...]      예) gen_images.py kim nam
 
 엔진 순서(2026-09-26 사용자 지시): **① codex → ② codex 쿼터가 끝나 실패하면 로컬 SDXL**
+⚠️ 같은 날 로컬 SDXL 을 삭제했다(디스크 확보). 설치돼 있지 않으면 ②를 건너뛰고 멈춘다 — 한도 해제 후 재실행.
 (`~/Desktop/kim/ssul/pipeline/gen_local.py`, RealVisXL + Lightning 8스텝, 768×480 생성 → 1024×768 크롭).
 mflux(Z-Image-Turbo)는 느려서 삭제했다(2026-09-26). SDXL 은 얼굴 정면이 무너지기 쉬워 네거티브로 막아 뒀다.
 """
@@ -384,6 +385,8 @@ def generate_sdxl(key, scene):
 def generate(key, scene):
     ok, tail = generate_codex(key, scene)
     if ok:
+        return ok, tail
+    if not os.path.exists(SDXL_PY):  # 2026-09-26 로컬 SDXL 삭제 — 재설치 전까진 codex 만
         return ok, tail
     print(f"  {key:18s} codex 실패 → 로컬 SDXL 로 대체")
     return generate_sdxl(key, scene)
