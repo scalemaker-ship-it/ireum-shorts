@@ -7,9 +7,9 @@ OpenAI Images API를 직접 쓰면 과금되지만, `codex exec`는 ChatGPT 구�
 
 사용: python3 scripts/gen_images.py [회차접두어 ...]      예) gen_images.py kim nam
 
-MFLUX_PREFIXES 접두어는 codex 대신 **로컬 mflux(Z-Image-Turbo 4bit)**로 뽑는다 — 쿼터 없음, 1장 약 2분 40초
-(M4 16GB, --low-ram, 1024×768, 9 steps). 모델은 ~/.venvs/mflux/zimage-turbo-q4 (mflux-save로 미리 양자화).
-⚠️ mflux는 같은 이름 파일이 있으면 덮어쓰지 않고 `_1`을 붙여 저장한다 — 다시 뽑을 땐 기존 파일을 먼저 치운다.
+엔진 순서(2026-09-26 사용자 지시): **① codex → ② codex 쿼터가 끝나 실패하면 로컬 SDXL**
+(`~/Desktop/kim/ssul/pipeline/gen_local.py`, RealVisXL + Lightning 8스텝, 768×480 생성 → 1024×768 크롭).
+mflux(Z-Image-Turbo)는 느려서 삭제했다(2026-09-26). SDXL 은 얼굴 정면이 무너지기 쉬워 네거티브로 막아 뒀다.
 """
 import os
 import subprocess
@@ -347,32 +347,46 @@ def _style_for(key, scene):
     return f"Image: {scene} {STYLE_COLOR if key.startswith(COLOR_PREFIXES) else STYLE}"
 
 
-MFLUX_PREFIXES = ("mhs_", "mhsc_")
-MFLUX_BIN = os.path.expanduser("~/.venvs/mflux/bin/mflux-generate-z-image-turbo")
-MFLUX_MODEL = os.path.expanduser("~/.venvs/mflux/zimage-turbo-q4")
+SSUL = os.path.expanduser("~/Desktop/kim/ssul")
+SDXL_PY = os.path.join(SSUL, "sdvenv/bin/python3")
+SDXL_GEN = os.path.join(SSUL, "pipeline/gen_local.py")
 
 
-def generate_mflux(key, scene, seed=7):
+# GPT 이미지는 전역 codex-image gen.sh 로만 뽑는다 — 가장 싼 모델 + GPT는 생성만(2026-09-26).
+# codex exec 를 직접 부르면 기본 최상위 모델이 저장·검증까지 돌아 장당 한도를 5배 넘게 먹는다.
+GEN_SH = os.path.expanduser("~/.claude/skills/codex-image/scripts/gen.sh")
+
+
+def generate_codex(key, scene):
     path = os.path.join(OUT, key + ".png")
-    r = subprocess.run([MFLUX_BIN, "--model", MFLUX_MODEL, "--base-model", "z-image-turbo", "--low-ram",
-                        "--prompt", _style_for(key, scene), "--width", "1024", "--height", "768",
-                        "--steps", "9", "--seed", str(seed), "--output", path],
-                       cwd=BASE, capture_output=True, text=True)
+    r = subprocess.run(["bash", GEN_SH, "--prompt", _style_for(key, scene), "--out", path,
+                        "--orientation", "landscape", "--width", "1024", "--height", "768"],
+                       cwd=BASE, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+    ok = os.path.exists(path) and os.path.getsize(path) > 50_000
+    return ok, (r.stdout or "")[-400:] + (r.stderr or "")[-400:]
+
+
+def generate_sdxl(key, scene):
+    """codex 가 막혔을 때만 — ssul 의 로컬 SDXL 로 뽑고 4:3(1024×768)으로 크롭한다."""
+    path = os.path.join(OUT, key + ".png")
+    env = dict(os.environ, SDXL_GEN_W="768", SDXL_GEN_H="480",
+               PYTORCH_MPS_HIGH_WATERMARK_RATIO="0.0", PYTORCH_ENABLE_MPS_FALLBACK="1")
+    r = subprocess.run([SDXL_PY, SDXL_GEN, "--prompt", _style_for(key, scene), "--out", path, "--fast"],
+                       cwd=SSUL, capture_output=True, text=True, env=env, stdin=subprocess.DEVNULL)
+    if os.path.exists(path):
+        from PIL import Image
+        im = Image.open(path); w, h = im.size; nw = int(h * 4 / 3)
+        im.crop(((w - nw) // 2, 0, (w - nw) // 2 + nw, h)).resize((1024, 768), Image.LANCZOS).save(path)
     ok = os.path.exists(path) and os.path.getsize(path) > 50_000
     return ok, (r.stdout or "")[-400:] + (r.stderr or "")[-400:]
 
 
 def generate(key, scene):
-    if key.startswith(MFLUX_PREFIXES):
-        return generate_mflux(key, scene)
-    path = os.path.join(OUT, key + ".png")
-    prompt = (f"Generate one image and save it to the absolute path {path}\n\n"
-              + _style_for(key, scene))
-    r = subprocess.run(["codex", "exec", "--skip-git-repo-check",
-                        "--sandbox", "workspace-write", prompt],
-                       cwd=BASE, capture_output=True, text=True)
-    ok = os.path.exists(path) and os.path.getsize(path) > 50_000
-    return ok, (r.stdout or "")[-400:] + (r.stderr or "")[-400:]
+    ok, tail = generate_codex(key, scene)
+    if ok:
+        return ok, tail
+    print(f"  {key:18s} codex 실패 → 로컬 SDXL 로 대체")
+    return generate_sdxl(key, scene)
 
 
 def main(prefixes):
